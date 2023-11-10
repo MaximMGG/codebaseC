@@ -113,22 +113,17 @@ char * mapIntToString(int buf) {
     return s;
 }
 
-char * str_set(char *s) {
-    char *buf = malloc(sizeof(char) * str_length(s));
-    for(int i = 0; ; i++) {
-        if (s[i] == '\0') {
-            buf[i] = '\0';
-            break;
-        }
-        buf[i] = s[i];
-    }
-    return buf;
-}
-
 str *cr_str(char *s) {
-    str *p_s = malloc(sizeof(char) * str_length(s));
-    p_s->str = str_set(s);
-    p_s->length = str_length(s);
+    str *p_s = malloc(sizeof(*p_s));
+    unsigned int len = str_length(s);
+    p_s->str = malloc(sizeof(char) * len);
+
+    for(int i = 0; i < len; i++) {
+        p_s->str[i] = s[i];
+    }
+
+    p_s->str[len] = '\0';
+    p_s->length = len;
     return p_s;
 }
 
@@ -152,6 +147,7 @@ void * str_cpy(str *to, str *from) {
 }
 
 void * str_mem_cpy(str *to, str *from, unsigned int size) {
+    to = realloc(to, sizeof(char) * from->length);
     unsigned int *iTo = (unsigned int *)to->str;
     unsigned int *iFrom = (unsigned int *)from->str;
     
@@ -213,36 +209,32 @@ void insertString(str *main, char *buf, int pos){
 }
 
 
-char * str_format(char *s,...) {
+str * str_format(str *main,...) {
     va_list li;
-    va_start(li, s);
-    char *buf_s = malloc(sizeof(char *));
-    int buf_i;
+    va_start(li, main);
 
-    for(int i = 0; s[i] != '\0'; i++){
-        if (s[i] == '%') {
-            switch(s[i + 1]) {
+    for(int i = 0; ;i++) {
+        if (main->str[i] == '%') {
+            switch(main->str[i + 1]) {
                 case 's': {
-                    buf_s = va_arg(li, char *);
-                    char *temp_s = insertString(s, buf_s, i);
-                    s = _str_cpy(s, temp_s);
+                    char *buf_s = va_arg(li, char *);
+                    insertString(main, buf_s, i);
                     break;
-                    }
-                case 'd': {
-                    buf_i = va_arg(li, int);
-                    char *temp_i = insertString(s, mapIntToString(buf_i), i);
-                    s = _str_cpy(s, temp_i);
-                    break;
-                    }
+                }
                 case '%': {
-                    char *temp_symb = insertString(s, "%", i);
-                    s = _str_cpy(s, temp_symb);
+                    insertString(main, "%", i); 
                     break;
-                    }
+                }
+                case 'd': {
+                    int buf_i = va_arg(li, int);
+                    insertString(main, mapIntToString(buf_i), i);
+                    break;
+                }
             }
         }
-
+        return main;
     }
+
     va_end(li);
     return s;
 }

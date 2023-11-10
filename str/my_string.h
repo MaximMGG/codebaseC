@@ -20,7 +20,7 @@ typedef struct {
 str *cr_str(char *s);
 char * str_set(char *s);
 void * str_cpy(str *to, str *from);
-char * str_format(char *s, ...);
+str * str_format(str *main, ...);
 void str_distroy(str *s);
 int str_cmp(str *one, str *two);
 unsigned int str_length(char *);
