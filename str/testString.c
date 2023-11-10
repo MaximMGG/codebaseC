@@ -65,9 +65,11 @@ void testStringFormat() {
 void testStringMemCopy() {
     str *from = cr_str("Hello from Penselvania");
     str *to = cr_str("");
-    to = str_mem_cpy(to, from, from->length);
+    to = str_mem_cpy(to, from, NULL, from->length);
 
     assert(str_cmp(to, from));
+
+    destroyAll(2, from, to);
 }
 
 

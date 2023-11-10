@@ -132,6 +132,7 @@ void * str_mem_cpy(str *to, str *from, char *old_string, unsigned int size) {
     
     if (old_string == NULL) {
         to = realloc(to, sizeof(char) * from->length);
+        to->length = from->length;
         iTo = (unsigned int *)to->str;
         iFrom = (unsigned int *)from->str;
     } else {
@@ -173,7 +174,7 @@ char * _str_cpy(char *target, char *buf) {
 }
 
 
-void insertString(str *main, char *buf, int pos){
+str * insertString(str *main, char *buf, int pos){
     char *tmp = malloc(sizeof(char) * (main->length * str_length(buf)));
     int i = 0;
     for(; i < pos; i++) {
@@ -185,8 +186,10 @@ void insertString(str *main, char *buf, int pos){
     }
     pos += 2;
     if (pos >= main->length) {
-        main->str = tmp;
-        return;
+        int len = str_length(tmp);
+        main = (str *) str_mem_cpy(main, NULL, tmp, len);
+        free(tmp);
+        return main;
     }
     for(int j = pos; ; i++, j++) {
         if (main->str[j] == '\0' || main->str[j] == '\n') {
@@ -196,8 +199,9 @@ void insertString(str *main, char *buf, int pos){
         tmp[i] = main->str[j];
     }
     int len = str_length(tmp);
-    main = str_mem_cpy(main, NULL, tmp, len);
+    main = (str *) str_mem_cpy(main, NULL, tmp, len);
     free(tmp);
+    return main;
 }
 
 
@@ -210,16 +214,16 @@ str * str_format(str *main,...) {
             switch(main->str[i + 1]) {
                 case 's': {
                     char *buf_s = va_arg(li, char *);
-                    insertString(main, buf_s, i);
+                    main = insertString(main, buf_s, i);
                     break;
                 }
                 case '%': {
-                    insertString(main, "%", i); 
+                    main = insertString(main, "%", i); 
                     break;
                 }
                 case 'd': {
                     int buf_i = va_arg(li, int);
-                    insertString(main, mapIntToString(buf_i), i);
+                    main = insertString(main, mapIntToString(buf_i), i);
                     break;
                 }
             }
