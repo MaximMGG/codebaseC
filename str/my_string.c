@@ -4,7 +4,7 @@ unsigned int str_length(char *buf) {
     unsigned int length = 0;
     for(int i = 0; ; i++) {
         if (buf[i] == '\0') {
-            length = i;
+            length = i + 1;
             break;
         }
     }
@@ -68,13 +68,11 @@ str * str_concat(str *first, str *second, char symbol) {
  * return 1 if one and two strings are the same
 */
 int str_cmp(str *one, str *two) {
-    unsigned int one_length = str_length(one->str);
-    unsigned int two_length = str_length(two->str);
 
-    if (one_length != two_length) {
+    if (one->length != two->length) {
         return 0;
     } else {
-        for(int i = 0; i < one_length; i++) {
+        for(int i = 0; i < one->length; i++) {
             if (one->str[i] != two->str[i]) {
                 return 0;
             }
@@ -127,30 +125,22 @@ str *cr_str(char *s) {
     return p_s;
 }
 
-void * str_cpy(str *to, str *from) {
-    to->str = realloc(to, sizeof(char) * (str_length(from->str)));
-    if (to->str == NULL) {
-        return NULL;
-    }
+void * str_mem_cpy(str *to, str *from, char *old_string, unsigned int size) {
 
-    int length = 0;
-
-    for(int i = 0; ; i++){
-        if ((from->str[i] = '\0')) {
-            to->str[i] = '\0';
-            to->length = i;
-            break;
-        }
-    }
-    to->length = length;
-    return to;
-}
-
-void * str_mem_cpy(str *to, str *from, unsigned int size) {
-    to = realloc(to, sizeof(char) * from->length);
-    unsigned int *iTo = (unsigned int *)to->str;
-    unsigned int *iFrom = (unsigned int *)from->str;
+    unsigned int *iTo;
+    unsigned int *iFrom;
     
+    if (old_string == NULL) {
+        to = realloc(to, sizeof(char) * from->length);
+        iTo = (unsigned int *)to->str;
+        iFrom = (unsigned int *)from->str;
+    } else {
+        unsigned int old_len = str_length(old_string);
+        to = realloc(to, sizeof(char) * old_len);
+        to->length = old_len;
+        iTo = (unsigned int *)to->str;
+        iFrom = (unsigned int *)old_string;
+    }
     int val = size / sizeof(int);
     int lastVal = size % sizeof(int);
 
@@ -200,12 +190,14 @@ void insertString(str *main, char *buf, int pos){
     }
     for(int j = pos; ; i++, j++) {
         if (main->str[j] == '\0' || main->str[j] == '\n') {
-            tmp[j] = '\0';
+            tmp[i] = '\0';
             break;
         }
         tmp[i] = main->str[j];
     }
-    main->str = tmp;
+    int len = str_length(tmp);
+    main = str_mem_cpy(main, NULL, tmp, len);
+    free(tmp);
 }
 
 
@@ -213,7 +205,7 @@ str * str_format(str *main,...) {
     va_list li;
     va_start(li, main);
 
-    for(int i = 0; ;i++) {
+    for(int i = 0; i < main->length; i++) {
         if (main->str[i] == '%') {
             switch(main->str[i + 1]) {
                 case 's': {
@@ -232,11 +224,9 @@ str * str_format(str *main,...) {
                 }
             }
         }
-        return main;
     }
-
     va_end(li);
-    return s;
+    return main;
 }
 
 void str_distroy(str *s) {
