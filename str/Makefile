@@ -13,3 +13,6 @@ $(TARGET): $(OBJ)
 
 clean: 
 	rm *.o $(TARGET)
+
+debug : 
+	$(CC) $(SRC) -g

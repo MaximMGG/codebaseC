@@ -36,7 +36,7 @@ char * mapDoubleToString(double buf) {
 }
 
 str * str_concat(str *first, str *second, char symbol) {
-    char* buf = malloc(sizeof(char) * (first->length + second->length));
+    char* buf = malloc(sizeof(char) * (first->length + second->length) + sizeof(symbol));
     int i = 0;
     int j = 0;
     
@@ -151,6 +151,28 @@ void * str_cpy(str *to, str *from) {
     return to;
 }
 
+void * str_mem_cpy(str *to, str *from, unsigned int size) {
+    unsigned int *iTo = (unsigned int *)to->str;
+    unsigned int *iFrom = (unsigned int *)from->str;
+    
+    int val = size / sizeof(int);
+    int lastVal = size % sizeof(int);
+
+    for(int i = 0; i < val; i++) {
+        *(iTo++) = *(iFrom++);
+    }
+
+    unsigned char *cTo = (unsigned char *) iTo;
+    unsigned char *cFrom = (unsigned char *) iFrom;
+
+    for(int i = 0; i < lastVal; i++) {
+        *(cTo++) = *(cFrom++);
+    }
+
+    return to;
+}
+
+
 char * _str_cpy(char *target, char *buf) {
     target = malloc(sizeof(char) * str_length(buf));
 
@@ -165,31 +187,29 @@ char * _str_cpy(char *target, char *buf) {
 }
 
 
-char * insertString(char *s, char *tmp, int pos){
-    long a = sizeof(char) * (str_length(s));
-    long b = sizeof(char) * (str_length(tmp));
-    char *buf = malloc(a + b);
-    int index;
-
-    for(index = 0; index < pos; index++){
-        buf[index] = s[index];
+void insertString(str *main, char *buf, int pos){
+    char *tmp = malloc(sizeof(char) * (main->length * str_length(buf)));
+    int i = 0;
+    for(; i < pos; i++) {
+        tmp[i] = main->str[i];
     }
-    
-    for(int i = 0; tmp[i] != '\0'; i++, index++){
-        buf[index] = tmp[i];
+    for(int j = 0; ; j++, i++) {
+        if (buf[j] == '\0') break;
+        tmp[i] = buf[j];
     }
-
-    for(int i = pos + 2; ; i++, index++){
-        if (s[i] == '\0') {
-            buf[index] = '\0';
+    pos += 2;
+    if (pos >= main->length) {
+        main->str = tmp;
+        return;
+    }
+    for(int j = pos; ; i++, j++) {
+        if (main->str[j] == '\0' || main->str[j] == '\n') {
+            tmp[j] = '\0';
             break;
         }
-        buf[index] = s[i];
+        tmp[i] = main->str[j];
     }
-    char * tt;
-    tt = _str_cpy(tt, buf);
-    free(buf);
-    return tt;
+    main->str = tmp;
 }
 
 

@@ -24,6 +24,7 @@ char * str_format(char *s, ...);
 void str_distroy(str *s);
 int str_cmp(str *one, str *two);
 unsigned int str_length(char *);
+void * str_mem_cpy(str *to, str *from, unsigned int size);
 /*
  *Concatinate two string with symbol between them
  *return new char *

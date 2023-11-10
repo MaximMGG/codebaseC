@@ -26,7 +26,7 @@ void testStringCompare() {
 
 }
 
-
+//TODO do not compare with symbols ('_', 'Q', ...)
 void testStringConcat() {
     str *one = cr_str("Hello");
     str *two = cr_str("World!");
