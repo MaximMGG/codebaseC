@@ -72,6 +72,23 @@ void testStringMemCopy() {
     destroyAll(2, from, to);
 }
 
+void testGetStringBetween() {
+
+    str *reference = cr_str("hello from my_string");
+    char *target = "<something>hello from my_string</something>";
+    char *target2 = "asd&hello from my_string&xbzcxb";
+    char *target3 = "nvudka!(#)_hello from my_string/x(&^#())bzcxb";
+
+    str *result = cr_str(get_str_between(target, '>', '<'));
+    assert(str_cmp(reference, result));
+    result = cr_str(get_str_between(target2, '&', '&'));
+    assert(str_cmp(reference, result));
+    result = cr_str(get_str_between(target3, '_', '/'));
+    assert(str_cmp(reference, result));
+
+    destroyAll(2, reference, result);
+}
+
 
 int main() {
     puts("----------------------------------------------------");
@@ -94,6 +111,10 @@ int main() {
     puts("Test string mem copy");
     testStringMemCopy();
     puts("Test string mem copy -> success");
+    puts("----------------------------------------------------");
+    puts("Test string get between to symbols");
+    testGetStringBetween();
+    puts("Test string get between to symbols -> success");
     puts("----------------------------------------------------");
 
     return 0;

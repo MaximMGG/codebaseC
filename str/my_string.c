@@ -237,3 +237,29 @@ void str_distroy(str *s) {
     free(s);
 }
 
+
+
+char * get_str_between(char *target, char from_symbol, char to_symbol) {
+
+    int from = 0; 
+    int to = 0;
+
+    for(int i = 0; ; i++) {
+        if (target[i] == from_symbol && from == 0) {
+            from = i + 1;
+            continue;
+        }
+        if (target[i] == to_symbol && to == 0 && from != 0) {
+            to = i + 1;
+            break;
+        }
+    }
+    
+    char *result = malloc(sizeof(char) * (to - from + 1));
+
+    for(int i = from, j = 0; i < to - 1; i++, j++) {
+       result[j] = target[i]; 
+    }
+    return result;
+}
+
