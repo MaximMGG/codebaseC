@@ -9,3 +9,6 @@ ar_list_test.o : ar_list.c ar_list_test.c
 
 clean:
 	rm *.o test
+
+debug:
+	gcc ar_list_test.c ar_list.c -g

@@ -1,6 +1,6 @@
 #include "ar_list.h"
-#include <cstdio>
-#include <cstring>
+
+
 
 
 a_list * al_create(DATA_TYPE d_type, boolean distinct) {
@@ -28,15 +28,21 @@ void al_add(a_list *list, void *value, DATA_TYPE d_type) {
         return;
     }
 
-    if (d_type == STRING) {
-        list->value[list->len] = malloc(sizeof(char) * strlen((char *)value));        
-        strcpy(list->value[list->len], (char *) value);
-    } else {
-        unsigned char *l_point = (unsigned char *) list->value[list->len];
-        unsigned char *v_point = (unsigned char *) value;
+    if (list->distinct == false) {
+        if (d_type == STRING) {
+            list->value[list->len] = malloc(sizeof(char) * strlen((char *)value));        
+            strcpy(list->value[list->len], (char *) value);
+        } else {
+            unsigned char *l_point = (unsigned char *) list->value[list->len];
+            unsigned char *v_point = (unsigned char *) value;
 
-        for(int i = 0; i < list->data_type; i++, l_point++, v_point++) {
-            *l_point = *v_point;
+            for(int i = 0; i < list->data_type; i++, l_point++, v_point++) {
+                *l_point = *v_point;
+            }
+        }
+    } else {
+        if (al_conteins(list, value)) {
+            return;
         }
     }
     list->len++;
@@ -47,22 +53,54 @@ void al_add(a_list *list, void *value, DATA_TYPE d_type) {
 
 
 
-boolean al_conteins(a_list *list, void *value);
+boolean al_conteins(a_list *list, void *value) {
+
+    return true;
+}
 
 
 
 
-void al_delete(a_list *list, void *value, unsigned int pos);
+void al_delete(a_list *list, void *value, unsigned int pos) {
+    
+}
+
+
+void *al_get(a_list *list, void *value, unsigned int pos) {
+    return NULL;
+}
 
 
 
-void *al_get(a_list *list, void *value, unsigned int pos);
+void al_destroy(a_list *list) {
 
-
-
-void al_destroy(a_list *list);
+}
 
 
 
 
-void check_list_len(a_list *list);
+void check_list_len(a_list *list) {
+    int buf;
+    if (list->len == list->max_size) {
+        buf = list->max_size;
+        list->max_size <<= 1;
+    } else {
+        return;
+    }
+
+    list->value = realloc(list->value, sizeof(void *) * list->max_size);
+
+    if (list->data_type != STRING) {
+        for(int i = buf; i < list->max_size; i++) {
+            list->value[i] = malloc(list->data_type);
+        }
+    }
+}
+
+
+
+
+
+
+
+
