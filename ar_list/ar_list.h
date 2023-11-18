@@ -1,6 +1,8 @@
 #ifndef _AR_LIST
 #define _AR_LIST
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 
 #define true 1
@@ -37,7 +39,7 @@ a_list * al_create(DATA_TYPE d_type, boolean distinct);
 /*add value to list, if DATA_TYPE is diffrent then DATA_TYPE in list
  *print error("ERROR: Encorrect DATA_TYPE")
 */
-void al_add(a_list *list, void *value, DATA_TYPE);
+void al_add(a_list *list, void *value, DATA_TYPE d_type);
 //return true if list contain value or false
 boolean al_conteins(a_list *list, void *value);
 /*
@@ -50,11 +52,11 @@ void al_delete(a_list *list, void *value, unsigned int pos);
 */
 void *al_get(a_list *list, void *value, unsigned int pos);
 
+//free memory of list
+void al_destroy(a_list *list);
 
-
-
-
-
+//check length of list, if more then list->max_size malloc new memmory
+void check_list_len(a_list *list);
 
 
 
