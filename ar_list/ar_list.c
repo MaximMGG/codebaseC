@@ -54,15 +54,45 @@ void al_add(a_list *list, void *value, DATA_TYPE d_type) {
 
 
 boolean al_conteins(a_list *list, void *value) {
-
-    return true;
+    if (list->data_type == STRING) {
+        for(int i = 0; i < list->len; i++) {
+            if (!strcmp(list->value[i], value)) {
+                return true;
+            }
+        }
+        return false;
+    } else {
+        boolean same = false;
+        for (int i = 0; i < list->len; i++) {
+            unsigned char *l_point = (unsigned char *) list->value[i];
+            unsigned char *v_point = (unsigned char *) value;
+            for(int j = 0; j < list->data_type; j++, l_point++, v_point++) {
+                if (*l_point == *v_point) {
+                    same = true;
+                } else {
+                    same = false;
+                    break;
+                }
+            }
+            if (same == true) return true;
+        }
+    }
+    return false;
 }
 
 
 
 
 void al_delete(a_list *list, void *value, unsigned int pos) {
-    
+   list->value[pos] = NULL; 
+   if (pos == list->len - 1) {
+       list->len--;
+       return;
+   }
+   for(int i = pos; i < list->len - 1; i++) {
+        list->value[i] = list->value[i + 1];
+   }
+   list->len--;
 }
 
 
@@ -73,7 +103,7 @@ void *al_get(a_list *list, void *value, unsigned int pos) {
 
 
 void al_destroy(a_list *list) {
-
+    free(list);
 }
 
 
