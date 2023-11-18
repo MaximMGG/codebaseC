@@ -1,14 +1,18 @@
 #ifndef _LINKED_LIST_H_
 #define _LINKED_LIST_H_
 
+#include <stdlib.h>
+
 typedef int boolean;
 #define true 1
 #define false 0
+
 
 typedef struct s_linked_list {
     void *value;
     struct s_linked_list *next;
 } linked_list;
+
 
 //create linked_list and return poiter on it
 linked_list * create_linked_list();

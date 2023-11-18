@@ -44,12 +44,15 @@ void testStringConcat() {
     str *one = cr_str("Hello");
     str *two = cr_str("World!");
     str *tree = str_concat(one, two, ' ');
+    str *four = str_concat(one, two, 0);
 
     str *buf = cr_str("Hello World!");
+    str *bu = cr_str("HelloWorld!");
 
     assert(str_cmp(tree, buf));
+    assert(str_cmp(four, bu));
 
-    destroyAll(4, one, one, two, tree, buf);
+    destroyAll(6, one, one, two, tree,four, bu, buf);
 }
 
 void testStringFormat() {

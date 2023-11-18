@@ -42,9 +42,13 @@ str * str_concat(str *first, str *second, char symbol) {
     
     for( ; ;i++) {
         if (first->str[i] == '\0') {
-            buf[i] = symbol;
-            i++;
-            break;
+            if (symbol == 0) {
+                break;
+            } else {
+                buf[i] = symbol;
+                i++;
+                break;
+            }
         }
         buf[i] = first->str[i];
     }
