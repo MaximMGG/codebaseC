@@ -3,18 +3,25 @@
 
 
 
-a_list * al_create(DATA_TYPE d_type, boolean distinct) {
+a_list * al_create(DATA_TYPE d_type, boolean distinct, unsigned int struct_size) {
     a_list *list = malloc(sizeof(*list));
     list->data_type = d_type;
     list->distinct = distinct;
     list->max_size = 20;
     list->len = 0;
+    list->struct_size = struct_size;
 
     list->value = malloc(sizeof(void *) * list->max_size);
 
-    if (d_type != STRING) {
+    if (d_type != STRING && d_type != STRUCT) {
         for(int i = 0; i < list->max_size; i++) {
             list->value[i] = malloc(d_type); 
+        }
+    }
+
+    if (d_type == STRUCT) {
+        for(int i = 0; i < list->max_size; i++) {
+            list->value[i] = malloc(struct_size); 
         }
     }
     return list;
@@ -32,6 +39,13 @@ void al_add(a_list *list, void *value, DATA_TYPE d_type) {
         if (d_type == STRING) {
             list->value[list->len] = malloc(sizeof(char) * strlen((char *)value));        
             strcpy(list->value[list->len], (char *) value);
+        } else if (d_type == STRUCT)  {
+            unsigned char *l_point = (unsigned char *) list->value[list->len];
+            unsigned char *v_point = (unsigned char *) value;
+
+            for(int i = 0; i < list->struct_size; i++, l_point++, v_point++) {
+                *l_point = *v_point;
+            }
         } else {
             unsigned char *l_point = (unsigned char *) list->value[list->len];
             unsigned char *v_point = (unsigned char *) value;

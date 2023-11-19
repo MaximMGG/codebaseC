@@ -18,6 +18,7 @@ typedef enum d_type {
     FLOAT = sizeof(float), 
     DOUBLE = sizeof(double), 
     LONG_DOUBLE = sizeof(long double),
+    STRUCT = -2,
     STRING = -1
 } DATA_TYPE;
 
@@ -27,6 +28,7 @@ typedef struct ar_list {
     unsigned int max_size;
     DATA_TYPE data_type;
     boolean distinct;
+    unsigned int struct_size;
 } a_list;
 
 /*  
@@ -34,8 +36,9 @@ typedef struct ar_list {
  *  if distinct == true ->list can contain only not same values,
  *  if try to add same value with distinct true mode, will do nothing if 
  *  that value contains in list
+ *  if DATA_TYPE is struct, need to set struct_size in bytes
 */
-a_list * al_create(DATA_TYPE d_type, boolean distinct);
+a_list * al_create(DATA_TYPE d_type, boolean distinct, unsigned int struct_size);
 /*add value to list, if DATA_TYPE is diffrent then DATA_TYPE in list
  *print error("ERROR: Encorrect DATA_TYPE")
 */
