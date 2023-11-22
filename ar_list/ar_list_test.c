@@ -25,6 +25,9 @@ void test_al_create() {
     assert(list->max_size == 20);
     assert(list->data_type == STRUCT);
     assert(size == list->struct_size);
+
+    list = al_create(STRING, false, 0);
+    list = al_create(STRING, false, 0);
 }
 
 

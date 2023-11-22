@@ -68,6 +68,10 @@ void al_add(a_list *list, void *value, DATA_TYPE d_type) {
 
 
 boolean al_conteins(a_list *list, void *value) {
+    if (list->data_type == STRUCT) {
+        fprintf(stderr, "Do not check conteinings, DATA_TYPE is STRUCT");
+        return false;
+    }
     if (list->data_type == STRING) {
         for(int i = 0; i < list->len; i++) {
             if (!strcmp(list->value[i], value)) {
@@ -111,7 +115,10 @@ void al_delete(a_list *list, void *value, unsigned int pos) {
 
 
 void *al_get(a_list *list, void *value, unsigned int pos) {
-    return NULL;
+    if (pos >= list->len) {
+        return NULL;
+    }
+    return list->value[pos];
 }
 
 
@@ -143,6 +150,27 @@ void check_list_len(a_list *list) {
 
 
 
+a_list *al_reset(a_list *buf) {
+    buf->max_size = 20;
+    buf->len = 0;
+    free(buf->value);
+
+    buf->value = malloc(sizeof(void *) * buf->max_size);
+
+    if (buf->data_type != STRING && buf->data_type != STRUCT) {
+        for(int i = 0; i < buf->max_size; i++) {
+            buf->value[i] = malloc(buf->data_type); 
+        }
+    }
+
+    if (buf->data_type == STRUCT) {
+        for(int i = 0; i < buf->max_size; i++) {
+            buf->value[i] = malloc(buf->struct_size); 
+        }
+    }
+
+    return buf;
+}
 
 
 

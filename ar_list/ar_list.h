@@ -61,7 +61,8 @@ void al_destroy(a_list *list);
 //check length of list, if more then list->max_size malloc new memmory
 void check_list_len(a_list *list);
 
-
+//clear ar_list, but not destroy it
+a_list *al_reset(a_list *buf);
 
 
 
