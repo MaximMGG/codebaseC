@@ -31,6 +31,7 @@ void queue_add(Queue *q, void *ptr_p) {
             q->last->prev = q->first;
         } else {
             tmp->next = q->first;
+            q->first->prev = tmp;
             q->first = tmp;
         }
     }
@@ -39,6 +40,7 @@ void queue_add(Queue *q, void *ptr_p) {
 }
 
 void *queue_get(Queue *q) {
+    mtx_lock(&mutex);
     if (q->size == 0) {
         return (void *) "Queue is apty\0";
     }
@@ -50,7 +52,11 @@ void *queue_get(Queue *q) {
     } else {
         tmp = q->last;
         q->last = q->last->prev;
+        q->last->next = NULL;
     }
+    void *p = tmp->ptr;
+    free(tmp);
     q->size--;
-    return tmp;
+    mtx_unlock(&mutex);
+    return p;
 }
