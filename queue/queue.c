@@ -42,7 +42,7 @@ void queue_add(Queue *q, void *ptr_p) {
 void *queue_get(Queue *q) {
     mtx_lock(&mutex);
     if (q->size == 0) {
-        return (void *) "Queue is apty\0";
+        return (void *) "Queue is empty\0";
     }
     struct one_step *tmp;
     if (q->last == q->first) {
@@ -60,3 +60,12 @@ void *queue_get(Queue *q) {
     mtx_unlock(&mutex);
     return p;
 }
+
+int get_size(Queue *q) {
+    int s;
+    mtx_lock(&mutex);
+    s = q->size;
+    mtx_unlock(&mutex);
+    return s;
+}
+

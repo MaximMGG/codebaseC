@@ -16,5 +16,6 @@ typedef struct queue_s {
 Queue *queue_create();
 void queue_add(Queue *q, void *ptr_p);
 void *queue_get(Queue *q);
+int get_size(Queue *q);
 
 #endif //_QUEUE_H_
