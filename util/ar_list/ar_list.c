@@ -171,8 +171,3 @@ a_list *al_reset(a_list *buf) {
 
     return buf;
 }
-
-
-
-
-
