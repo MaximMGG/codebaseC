@@ -9,7 +9,10 @@ struct property {
 typedef struct property Property;
 
 
+//take a string and return Property key->value
+//string should be like {"key":"value","key2":12345,"a":"b",...}
 Property **parse_get_response(char *, int *property_len);
+//free all memory in Property
 void free_property(Property **y_prop, int property_len);
 /*
  * set property in struct, struct should be like in example:
@@ -19,9 +22,9 @@ void free_property(Property **y_prop, int property_len);
  *      char *key_prop3;
  *      ...
  * }
- * void *y_struct need to set pointer on first alement in struct (not pointer on struct)
- * should put in the same way from first to last like in http response
- * unsigned int size -> here need to set count alements in your_map struct
+ * void *y_struct need to set pointer on struct the need to fill
+ * struct atributes should put in the same way from first to last like in http response
+ * unsigned int size -> here need to set count alements in  "void *y_struct"
  * if struct countein 3 elements, set size = 3;
  * return pointer on y_struct
 */
