@@ -2,6 +2,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+struct tmp {
+    char *symbol;
+    char *priceChange;
+    char *priceChangePerc;
+    char *weightavgprice;
+    char *openprice;
+    char *highprice;
+    char *lowPrice;
+    char *lastPrice;
+    char *volume;
+    char *quoteVolume;
+    char *openTime;
+    char *closeTime;
+    char *firstId;
+    char *lastId;
+    char *count;
+};
+
+
 int main() {
 
     int *size = malloc(sizeof(int));
@@ -13,6 +33,29 @@ int main() {
     for(int i = 0; i < *size; i++) {
         printf("Key is %s, value is %s\n", prop[i]->key, prop[i]->val);
     }
+
+    struct tmp *tmp = malloc(sizeof(*tmp));
+
+    set_property_in_struct_map(*size, tmp, prop);
+    puts("----------------------------------------------------");
+
+    printf("%s\n", tmp->symbol);
+    printf("%s\n", tmp->priceChange);
+    printf("%s\n", tmp->priceChangePerc);
+    printf("%s\n", tmp->weightavgprice);
+    printf("%s\n", tmp->openprice);
+    printf("%s\n", tmp->highprice);
+    printf("%s\n", tmp->lowPrice);
+    printf("%s\n", tmp->lastPrice);
+    printf("%s\n", tmp->volume);
+    printf("%s\n", tmp->quoteVolume);
+    printf("%s\n", tmp->openTime);
+    printf("%s\n", tmp->closeTime);
+    printf("%s\n", tmp->firstId);
+    printf("%s\n", tmp->lastId);
+    printf("%s\n", tmp->count);
+
+    free_property(prop, *size);
 
     return 0;
 }
