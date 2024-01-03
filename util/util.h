@@ -7,6 +7,7 @@
 
 #include <util/ar_list.h>
 #include <util/queue.h>
+#include <util/pr_map.h>
 
 //try(a) if a < 0 or == NULL print ERROR in stderr
 #define tryc(c) if ((c) < 0) fprintf(stderr, "File: %s, Line: %d, %s ERROR\n", __FILE__, __LINE__, # c)
