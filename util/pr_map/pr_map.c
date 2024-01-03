@@ -1,6 +1,7 @@
 #include "pr_map.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #define PROPERTY_SIZE 20
 #define PROP_BUFFER_SIZE 64
@@ -80,6 +81,61 @@ void free_struct_map(void *y_struct, unsigned int size) {
     }
 
     free(y_struct);
+}
 
+Property *parse_property(char *line) {
+    Property *prop = malloc(sizeof(Property));
+    unsigned int len = strlen(line);
+    char *p = line;
+    while(*p != '=') {
+        p++;
+    }
+    prop->key = (char *) malloc(line - p + 1);
+    prop->val = (char *) malloc(len - (unsigned int)(line - p));
+    char *ptr = line;
+    char *buf = prop->key;
+    while (ptr != p) {
+        *(buf++) = *(ptr++);
+    }
+    p++;
+    *buf = '\0';
+    buf = prop->val;
+    while(*p != '\0') {
+        *(buf++) = *(p++);
+    }
+    *buf = '\0';
+
+    return prop;
+}
+
+
+static char *find_value_by_key(FILE *f, char *key) {
+    char buf[128];
+    while(!feof(f)) {
+       fgets(buf, 128, f); 
+       if (strcmp(buf, key) == 0) {
+       }
+    }
+
+    return NULL;
+}
+
+char *get_property_from_file(char *filename, char *key) {
+    FILE *f;
+    if (filename == NULL) {
+        f = fopen(STANDARD_PROP_FILE1, "r");
+        if (f == NULL) {
+            f = fopen(STANDARD_PROP_FILE2, "r");
+            if (f == NULL) {
+                fprintf(stderr, "property.conf file does not exist\n");
+            }
+        }
+    } else {
+        f = fopen(filename, "r");
+        if (f == NULL) {
+            fprintf(stderr, "File %s does not exist\n", filename);
+        }
+    }
+    return NULL;
 }
 

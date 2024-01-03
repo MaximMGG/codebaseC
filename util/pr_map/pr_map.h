@@ -1,6 +1,11 @@
 #ifndef _PR_MAP_H_
 #define _PR_MAP_H_
 
+
+#define STANDARD_PROP_FILE1 "res/property.conf"
+#define STANDARD_PROP_FILE2 "../res/property.conf"
+
+
 struct property {
     char *key;
     char *val;
@@ -30,9 +35,16 @@ void free_property(Property **y_prop, int property_len);
 */
 void *set_property_in_struct_map(unsigned int size, void *y_struct, Property **pr);
 
+//return value of property with key; 
+//name=Bob -> return Bob if filename == NULL, check standard repos
+//res/property.conf or ../res/property.conf
+char *get_property_from_file(char *filename, char *key);
 
 //free all memory in y_struct
 void free_struct_map(void *y_struct, unsigned int size);
+
+//parse line in format key=value to struct Property
+Property *parse_property(char *line);
 
 
 #endif // _PR_MAP_H_
