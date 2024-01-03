@@ -17,8 +17,11 @@ typedef struct property Property;
 //take a string and return Property key->value
 //string should be like {"key":"value","key2":12345,"a":"b",...}
 Property **parse_get_response(char *, int *property_len);
-//free all memory in Property
+//free all memory in Property **
 void free_property(Property **y_prop, int property_len);
+
+//frees only one Property *
+void freeP(Property *pr);
 /*
  * set property in struct, struct should be like in example:
  * struct your_map {

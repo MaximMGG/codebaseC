@@ -113,10 +113,15 @@ static char *find_value_by_key(FILE *f, char *key) {
     char buf[128];
     while(!feof(f)) {
        fgets(buf, 128, f); 
-       if (strcmp(buf, key) == 0) {
+       Property *prop = parse_property(buf);
+       if (strcmp(prop->key, key) == 0) {
+           char *res = (char *) malloc(sizeof(prop->val));
+           strcpy(res, prop->val);
+           freeP(prop);
+           return res;
        }
+       freeP(prop);
     }
-
     return NULL;
 }
 
@@ -136,6 +141,19 @@ char *get_property_from_file(char *filename, char *key) {
             fprintf(stderr, "File %s does not exist\n", filename);
         }
     }
-    return NULL;
+    
+    char *val = find_value_by_key(f, key);
+    if (val == NULL) {
+        fprintf(stderr, "Can not find value for key %s\n", key);
+    }
+    fclose(f);
+
+    return val;
 }
 
+
+void freeP(Property *pr) {
+    free(pr->key);
+    free(pr->val);
+    free(pr);
+}
