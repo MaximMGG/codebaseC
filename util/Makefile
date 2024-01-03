@@ -1,18 +1,20 @@
+LIB = lib_util.a
+SRC = ar_list/ar_list.c pr_map/pr_map.c queue/queue.c
+OBJ = ar_list.o pr_map.o queue.o
 
+$(LIB): $(OBJ) 
+	ar rcs $@ $^ 
 
-lib_util.a: queue.o ar_list.o
-	ar rcs $@ $^
+$(OBJ): ar_list/ar_list.c pr_map/pr_map.c queue/queue.c
+	gcc -o $@ -c $< -g
 
-queue.o: queue/queue.c
-	gcc -c $< -o $@ -g
-
-ar_list.o: ar_list/ar_list.c
-	gcc -c $< -o $@ -g
+clean:
+	rm *.a *.o
 
 deploy:
-	sudo mkdir -p /usr/local/include/util
-	sudo cp ar_list/ar_list.h /usr/local/include/util/
-	sudo cp queue/queue.h /usr/local/include/util/
-	sudo cp util.h /usr/local/include/util/
-	sudo cp lib_util.a /usr/local/lib/
-	cp *.o obj/
+	sudo cp $(LIB) /usr/lib/
+	sudo mkdir -p /usr/include/util
+	sudo cp ar_list/ar_list.h /usr/include/util/
+	sudo cp pr_map/pr_map.h /usr/include/util/
+	sudo cp queue/queue.h /usr/include/util/
+	sudo cp	util.h /usr/include/util
