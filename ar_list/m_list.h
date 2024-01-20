@@ -36,8 +36,8 @@ List *list_create(unsigned int len, VAL_TYPE type);
  * return pointer to List
 */
 List *list_create_from_string(const char *sourse, VAL_TYPE type);
-// create list from array
-List *list_create_from_array(void **sourse, VAL_TYPE type);
+// create list from array, need to set "size" of array
+List *list_create_from_array(void **sourse, VAL_TYPE type, int size);
 //set concurrensy functional
 List *list_set_concurrency(List *list, boolean concurrensy);
 //add value in List

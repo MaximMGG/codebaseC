@@ -40,16 +40,41 @@ static char **parse_values_from_string(const char *sourse, int *size) {
     return p_list;
 }
 
-List *list_create_from_string(const char *sourse, VAL_TYPE value) {
+List *list_create_from_string(const char *sourse, VAL_TYPE type) {
     int size = 0;
     char **parse_value = parse_values_from_string(sourse, &size);
-    List *list;
+    List *list = (List *) malloc(sizeof(List *));
+    list->len = size;
+    list->max_len = LIST_STANDARD_LEN > size ? LIST_STANDARD_LEN : size;
+    list->type = type;
+    list->list = (void **) malloc(sizeof(void *) * list->max_len);
 
-
+    for(int i = 0; i < size; i++) {
+        switch (type) {
+            case M_CHAR:
+                char v = parse_value[i][0];
+                break;
+            case M_SHORT:
+                break;
+            case M_INT:
+                break;
+            case M_LONG:
+                break;
+            case M_FLOAT:
+                break;
+            case M_DOUBLE:
+                break;
+            case M_STRING:
+                break;
+            case M_STRUCT:
+                fprintf(stderr, "parsing error, do work with struct type");
+                break;
+        }
+    }
 
     return list;
 }
-List *list_create_from_array(void **sourse, VAL_TYPE type);
+List *list_create_from_array(void **sourse, VAL_TYPE type, int size);
 List *list_set_concurrency(List *list, boolean concurrensy);
 List *list_add(List *list, void *value);
 List *list_add_list(List *__restrict sourse, List *dest);
