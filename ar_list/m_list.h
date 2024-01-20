@@ -21,19 +21,23 @@ struct s_list {
     void **list;
     unsigned int len;
     unsigned int max_len;
+    VAL_TYPE type;
     boolean concurrent;
 };
 
-typedef s_list List;
+typedef struct s_list List;
 
 //create new list, if len = 0, set defoult length, if not, create list with lenth "len"
 //return pointer to List 
 List *list_create(unsigned int len, VAL_TYPE type);
 /*create list from string sourse, parse all values from string to list
  * string should be like "value1, value2, value3, ..."
+ * vork only with numeric types and strings
  * return pointer to List
 */
-List *list_create_from_string(const char *sourse, VAL_TYPE);
+List *list_create_from_string(const char *sourse, VAL_TYPE type);
+// create list from array
+List *list_create_from_array(void **sourse, VAL_TYPE type);
 //set concurrensy functional
 List *list_set_concurrency(List *list, boolean concurrensy);
 //add value in List
