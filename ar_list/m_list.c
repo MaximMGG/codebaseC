@@ -34,7 +34,6 @@
                         }
 
 #define CHECK(l) if(list_check(l)) return 1
-#define SET_TYPE(type) #type *temp = (#type *) malloc(sizeof(#type));
 
 static int list_check(List *list) {
     if (list->len >= list->max_len) {
@@ -43,8 +42,6 @@ static int list_check(List *list) {
     }
     return 1;
 }
-
-
 
 static int list_add_mchar(List *list, char *ch){
     char *temp = (char *) malloc(sizeof(char));
@@ -189,16 +186,9 @@ List *list_create_from_string(const char *sourse, VAL_TYPE type) {
 
     return list;
 }
+
 List *list_create_from_array(void **sourse, VAL_TYPE type, int size);
 List *list_set_concurrency(List *list, boolean concurrensy);
-
-
-
-
-
-
-
-
 
 
 List *list_add(List *list, void *value);
