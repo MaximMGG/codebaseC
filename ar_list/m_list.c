@@ -6,46 +6,105 @@
 
 #define LIST_STANDARD_LEN 20
 
-#define Generic_add(l)  switch(l->type) {                                                       \
+#define Generic_add(l, v)  switch(l->type) {                                                    \
                             case M_CHAR:                                                        \
-                                list_add_mchar(l->list, (char *)l->val);                        \
+                                list_add_mchar(l, (char *)v);                                   \
                                 break;                                                          \
                             case M_SHORT:                                                       \
-                                list_add_mshort(l->list, (short *)l->val);                      \
+                                list_add_mshort(l, (short *)v);                                 \
                                 break;                                                          \
                             case M_CHAR:                                                        \
-                                list_add_mint(l->list, (int *)l->val);                          \
+                                list_add_mint(l, (int *)v);                                     \
                                 break;                                                          \
                             case M_CHAR:                                                        \
-                                list_add_mlong(l->list, (long *)l->val);                        \
+                                list_add_mlong(l, (long *)v);                                   \
                                 break;                                                          \
                             case M_CHAR:                                                        \
-                                list_add_mfloat(l->list, (float *)l->val);                      \
+                                list_add_mfloat(l, (float *)v);                                 \
                                 break;                                                          \
                             case M_CHAR:                                                        \
-                                list_add_mdouble(l->list, (double *)l->val);                    \
+                                list_add_mdouble(l, (double *)v);                               \
                                 break;                                                          \
                             case M_CHAR:                                                        \
-                                list_add_mstring(l->list, (char *)l->val);                      \
+                                list_add_mstring(l, (char *)v);                                 \
                                 break;                                                          \
                             case M_CHAR:                                                        \
-                                list_add_mstruct(l->list, l->val);                              \
+                                list_add_mstruct(l, v);                                         \
                                 break;                                                          \
                         }
 
+#define CHECK(l) if(list_check(l)) return 1
+#define SET_TYPE(type) #type *temp = (#type *) malloc(sizeof(#type));
+
+static int list_check(List *list) {
+    if (list->len >= list->max_len) {
+        list->max_len <<= 1;
+        list->list = realloc(list->list, sizeof(void *) * list->max_len);
+    }
+    return 1;
+}
 
 
-static int list_add_mchar(List *list, char *ch){return 0;}
-static int list_add_mshort(List *list, short *sh){return 0;}
-static int list_add_mint(List *list, int *in){return 0;}
-static int list_add_mlong(List *list, long *lo){return 0;}
-static int list_add_mfloat(List *list, float *fl){return 0;}
-static int list_add_mdouble(List *list, double *du){return 0;}
-static int list_add_mstring(List *list, char *str){return 0;}
-static int list_add_mstruct(List *list, void *struc, int size_of_struct){return 0;}
 
+static int list_add_mchar(List *list, char *ch){
+    char *temp = (char *) malloc(sizeof(char));
+    *temp = *ch;
+    list->list[list->len++] = temp;
+    CHECK(list);
+    return 0;
+}
 
+static int list_add_mshort(List *list, short *sh){
+    short *temp = (short *) malloc(sizeof(short));
+    *temp = *sh;
+    list->list[list->len++] = temp;
+    CHECK(list);
+    return 0;
+}
 
+static int list_add_mint(List *list, int *in){
+    int *temp = (int *) malloc(sizeof(int));
+    *temp = *in;
+    list->list[list->len++] = temp;
+    CHECK(list);
+    return 0;
+}
+
+static int list_add_mlong(List *list, long *lo){
+    long *temp = (long *) malloc(sizeof(long));
+    *temp = *lo;
+    list->list[list->len++] = temp;
+    CHECK(list);
+    return 0;
+}
+static int list_add_mfloat(List *list, float *fl){
+    float *temp = (float *) malloc(sizeof(float));
+    *temp = *fl;
+    list->list[list->len++] = temp;
+    CHECK(list);
+    return 0;
+}
+static int list_add_mdouble(List *list, double *du){
+    double *temp = (double *) malloc(sizeof(double));
+    *temp = *du;
+    list->list[list->len++] = temp;
+    CHECK(list);
+    return 0;
+}
+static int list_add_mstring(List *list, char *str){
+    char *temp = (char *) malloc(sizeof(char) * strlen(str));
+    strcpy(temp, str);
+    list->list[list->len++] = temp;
+    CHECK(list);
+    return 0;
+}
+static int list_add_mstruct(List *list, void *struc, int size_of_struct){
+    struct temp *t = malloc(size_of_struct);
+    memcpy(t, struc, size_of_struct);
+    list->list[list->len++] = t;
+    CHECK(list);
+    return 0;
+}
 
 
 List *list_create(unsigned int len, VAL_TYPE type) {
@@ -90,9 +149,42 @@ List *list_create_from_string(const char *sourse, VAL_TYPE type) {
     list->max_len = LIST_STANDARD_LEN > size ? LIST_STANDARD_LEN : size;
     list->type = type;
     list->list = (void **) malloc(sizeof(void *) * list->max_len);
+    int buf_i = 0;
+    long buf_l = 0;
+    double buf_d = 0.0;
 
     for(int i = 0; i < size; i++) {
-        
+       switch(type) {
+           case M_CHAR:
+               list_add_mchar(list, &parse_value[i][0]);
+               break;
+            case M_SHORT:
+               buf_i = atoi(parse_value[i]);
+               list_add_mshort(list, (short *) &buf_i);
+               break;
+            case M_INT:
+               buf_i = atoi(parse_value[i]);
+               list_add_mint(list, &buf_i);
+               break;
+            case M_LONG:
+               buf_l = atol(parse_value[i]);
+               list_add_mlong(list, &buf_l);
+               break;
+            case M_FLOAT:
+               buf_d = atof(parse_value[i]);
+               list_add_mfloat(list, (float *) &buf_d);
+               break;
+            case M_DOUBLE:
+               buf_d = atof(parse_value[i]);
+               list_add_mdouble(list, (double *) &buf_d);
+               break;
+            case M_STRING:
+               list_add_mstring(list, parse_value[i]);
+               break;
+            case M_STRUCT:
+               fprintf(stderr, "Error, do not work with struct");
+               break;
+       } 
     }
 
     return list;
