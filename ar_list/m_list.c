@@ -6,6 +6,48 @@
 
 #define LIST_STANDARD_LEN 20
 
+#define Generic_add(l)  switch(l->type) {                                                       \
+                            case M_CHAR:                                                        \
+                                list_add_mchar(l->list, (char *)l->val);                        \
+                                break;                                                          \
+                            case M_SHORT:                                                       \
+                                list_add_mshort(l->list, (short *)l->val);                      \
+                                break;                                                          \
+                            case M_CHAR:                                                        \
+                                list_add_mint(l->list, (int *)l->val);                          \
+                                break;                                                          \
+                            case M_CHAR:                                                        \
+                                list_add_mlong(l->list, (long *)l->val);                        \
+                                break;                                                          \
+                            case M_CHAR:                                                        \
+                                list_add_mfloat(l->list, (float *)l->val);                      \
+                                break;                                                          \
+                            case M_CHAR:                                                        \
+                                list_add_mdouble(l->list, (double *)l->val);                    \
+                                break;                                                          \
+                            case M_CHAR:                                                        \
+                                list_add_mstring(l->list, (char *)l->val);                      \
+                                break;                                                          \
+                            case M_CHAR:                                                        \
+                                list_add_mstruct(l->list, l->val);                              \
+                                break;                                                          \
+                        }
+
+
+
+static int list_add_mchar(List *list, char *ch){return 0;}
+static int list_add_mshort(List *list, short *sh){return 0;}
+static int list_add_mint(List *list, int *in){return 0;}
+static int list_add_mlong(List *list, long *lo){return 0;}
+static int list_add_mfloat(List *list, float *fl){return 0;}
+static int list_add_mdouble(List *list, double *du){return 0;}
+static int list_add_mstring(List *list, char *str){return 0;}
+static int list_add_mstruct(List *list, void *struc, int size_of_struct){return 0;}
+
+
+
+
+
 List *list_create(unsigned int len, VAL_TYPE type) {
     List *list = (List *) malloc(sizeof(List *));
     list->len = 0;
@@ -50,32 +92,23 @@ List *list_create_from_string(const char *sourse, VAL_TYPE type) {
     list->list = (void **) malloc(sizeof(void *) * list->max_len);
 
     for(int i = 0; i < size; i++) {
-        switch (type) {
-            case M_CHAR:
-                char v = parse_value[i][0];
-                break;
-            case M_SHORT:
-                break;
-            case M_INT:
-                break;
-            case M_LONG:
-                break;
-            case M_FLOAT:
-                break;
-            case M_DOUBLE:
-                break;
-            case M_STRING:
-                break;
-            case M_STRUCT:
-                fprintf(stderr, "parsing error, do work with struct type");
-                break;
-        }
+        
     }
 
     return list;
 }
 List *list_create_from_array(void **sourse, VAL_TYPE type, int size);
 List *list_set_concurrency(List *list, boolean concurrensy);
+
+
+
+
+
+
+
+
+
+
 List *list_add(List *list, void *value);
 List *list_add_list(List *__restrict sourse, List *dest);
 List *list_contein(List *list, void *value);

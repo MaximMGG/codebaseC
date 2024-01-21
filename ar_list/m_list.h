@@ -1,6 +1,8 @@
 #ifndef _M_LIST_
 #define _M_LIST_
 
+#include <threads.h>
+
 typedef char boolean;
 #define true 1
 #define false 0
@@ -23,6 +25,7 @@ struct s_list {
     unsigned int max_len;
     VAL_TYPE type;
     boolean concurrent;
+    mtx_t lock;
 };
 
 typedef struct s_list List;
