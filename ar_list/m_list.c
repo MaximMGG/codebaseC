@@ -29,10 +29,13 @@
                                 list_add_mstring(l, (char *)v);                                 \
                                 break;                                                          \
                             case M_STRUCT:                                                      \
+                                list_add_mstruct(l, v);                                         \
                                 break;                                                          \
                         }
 
 #define CHECK(l) if(list_check(l)) return 1
+#define FOR_L(l) for(int i = 0; i < l->len; i++)
+#define MAP_TYPE(l, i, type) (type) list_get(l, i) 
 
 static int list_check(List *list) {
     if (list->len >= list->max_len) {
@@ -94,9 +97,9 @@ static int list_add_mstring(List *list, char *str){
     CHECK(list);
     return 0;
 }
-static int list_add_mstruct(List *list, void *struc, int size_of_struct){
-    struct temp *t = malloc(size_of_struct);
-    memcpy(t, struc, size_of_struct);
+static int list_add_mstruct(List *list, void *struc){
+    struct temp *t = malloc(list->struct_size);
+    memcpy(t, struc, list->struct_size);
     list->list[list->len++] = t;
     CHECK(list);
     return 0;
@@ -231,7 +234,7 @@ List *list_create_from_array(void **sourse, VAL_TYPE type, int size) {
                list_add_mstring(list, sourse[i]);
                break;
             case M_STRUCT:
-               list_add_mstruct(list, sourse[i], *(int *) sourse[i]);
+               list_add_mstruct(list, sourse[i]);
                break;
        } 
     }
@@ -246,18 +249,86 @@ List *list_set_concurrency(List *list, boolean concurrensy) {
 
 List *list_add(List *list, void *value) {
     Generic_add(list, value);
-
-    return list;
-}
-
-List *list_add_s(List *list, void *value, int size) {
-    list_add_mstruct(list, value, size);
     return list;
 }
 
 List *list_add_list(List *__restrict sourse, List *dest) {
-
+    for(int i = 0; i < dest->len; i++) {
+        Generic_add(sourse, list_get(dest, i));
+    }
+    return sourse;
 }
-List *list_contein(List *list, void *value);
-List *list_remove(List *list, void *value);
-void list_free_all(List *list);
+
+
+
+int list_contein(List *list, void *value) {
+    int t = list->type;
+
+#if t == M_CHAR
+#define TYPE char
+#elif t == M_SHORT
+#define TYPE shourt
+#elif t == M_INT
+#define TYPE int
+#elif t == M_LONG
+#define TYPE long
+#elif t == M_FLOAT
+#define TYPE float
+#elif t == M_DOUBLE
+#define TYPE double
+#elif t == M_STRING
+#define TYPE char*
+#elif t == M_STRUCT
+#define TYPE void*
+#endif
+
+    FOR_L(list) {
+        TYPE *v = (TYPE *) list_get(list, i);    
+        if (t == M_STRING) {
+            if ((strcmp((char *) value, (char *) v)) == 0) 
+                return i;
+        }
+        if (t == M_STRUCT)
+            return i;
+        if (*v == *(TYPE*) value) return true;
+    }
+
+    return false;
+}
+
+List *list_remove(List *list, void *value) {
+    int pos = list_contein(list, value);
+    if (pos == 0) return NULL;
+    free(list->list[pos]);
+
+    if (pos == list->len - 1) return list;
+    for(int i = pos; i < list->len - 2; i++) {
+        list->list[i] = list->list[i + 1];
+    }
+    list->len--;
+
+    return list;
+}
+
+void *list_get(List *list, int index) {
+    if (index >= list->len) {
+        fprintf(stderr, "Index out of list length\n");
+        return NULL;
+    }
+    if (index < 0) {
+        fprintf(stderr, "Index less then 0\n");
+        return NULL;
+    }
+    return list->list[index];
+}
+
+void list_free_all(List *list) {
+    FOR_L(list) {
+        free(list->list[i]);
+    }
+    free(list->list);
+    list->list = NULL;
+    free(list);
+    list = NULL;
+}
+
