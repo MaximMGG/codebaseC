@@ -35,7 +35,6 @@
 
 #define CHECK(l) if(list_check(l)) return 1
 #define FOR_L(l) for(int i = 0; i < l->len; i++)
-#define MAP_TYPE(l, i, type) (type) list_get(l, i) 
 
 static int list_check(List *list) {
     if (list->len >= list->max_len) {
@@ -107,7 +106,7 @@ static int list_add_mstruct(List *list, void *struc){
 
 
 List *list_create(unsigned int len, VAL_TYPE type) {
-    List *list = (List *) malloc(sizeof(List *));
+    List *list = (List *) malloc(sizeof(List));
     list->len = 0;
     list->max_len = len == 0 ? LIST_STANDARD_LEN : len;
     list->type = type;
@@ -131,20 +130,26 @@ static char **parse_values_from_string(const char *sourse, int *size) {
                 p_list = (char **) realloc(p_list, sizeof(char *) * parse_len);
             }
             j = 0;
+            continue;
         }
         if (sourse[i] == '\0') {
+            buf[j] = '\0';
+            p_list[count] = (char *) malloc(strlen(buf));
+            strcpy(p_list[count++], buf);
             break;
         }
-        buf[j] = sourse[i];
+        if (sourse[i] == ' ') continue;
+        buf[j++] = sourse[i];
     }
+    *size = count;
     return p_list;
 }
 
 List *list_create_from_string(const char *sourse, VAL_TYPE type) {
     int size = 0;
     char **parse_value = parse_values_from_string(sourse, &size);
-    List *list = (List *) malloc(sizeof(List *));
-    list->len = size;
+    List *list = (List *) malloc(sizeof(List));
+    list->len = 0;
     list->max_len = LIST_STANDARD_LEN > size ? LIST_STANDARD_LEN : size;
     list->type = type;
     list->list = (void **) malloc(sizeof(void *) * list->max_len);
@@ -208,30 +213,30 @@ List *list_create_from_array(void **sourse, VAL_TYPE type, int size) {
     for(; i < size; i++) {
        switch(type) {
            case M_CHAR:
-               list_add_mchar(list, sourse[i]);
+               list_add_mchar(list, (char *)sourse[i]);
                break;
             case M_SHORT:
-               buf_i = atoi(sourse[i]);
+               buf_i = *(short *)sourse[i];
                list_add_mshort(list, (short *) &buf_i);
                break;
             case M_INT:
-               buf_i = atoi(sourse[i]);
+               buf_i = *(int *) sourse[i];
                list_add_mint(list, &buf_i);
                break;
             case M_LONG:
-               buf_l = atol(sourse[i]);
+               buf_l = *(long *) sourse[i];
                list_add_mlong(list, &buf_l);
                break;
             case M_FLOAT:
-               buf_d = atof(sourse[i]);
+               buf_d = *(float *) sourse[i];
                list_add_mfloat(list, (float *) &buf_d);
                break;
             case M_DOUBLE:
-               buf_d = atof(sourse[i]);
+               buf_d = *(double *) sourse[i];
                list_add_mdouble(list, (double *) &buf_d);
                break;
             case M_STRING:
-               list_add_mstring(list, sourse[i]);
+               list_add_mstring(list, (char *)sourse[i]);
                break;
             case M_STRUCT:
                list_add_mstruct(list, sourse[i]);
@@ -290,19 +295,19 @@ int list_contein(List *list, void *value) {
         }
         if (t == M_STRUCT)
             return i;
-        if (*v == *(TYPE*) value) return true;
+        if (*v == *(TYPE*) value) return i;
     }
 
-    return false;
+    return -1;
 }
 
 List *list_remove(List *list, void *value) {
     int pos = list_contein(list, value);
-    if (pos == 0) return NULL;
+    if (pos == -1) return NULL;
     free(list->list[pos]);
 
     if (pos == list->len - 1) return list;
-    for(int i = pos; i < list->len - 2; i++) {
+    for(int i = pos; i < list->len - 1; i++) {
         list->list[i] = list->list[i + 1];
     }
     list->len--;

@@ -53,10 +53,8 @@ List *list_add_list(List *__restrict sourse, List *dest);
 int list_contein(List *list, void *value);
 //remove from List value
 List *list_remove(List *list, void *value);
-
 //return value from List
 void *list_get(List *list, int index);
-
 //free all memory in List
 void list_free_all(List *list);
 
