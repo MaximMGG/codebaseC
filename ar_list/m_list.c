@@ -13,23 +13,22 @@
                             case M_SHORT:                                                       \
                                 list_add_mshort(l, (short *)v);                                 \
                                 break;                                                          \
-                            case M_CHAR:                                                        \
+                            case M_INT:                                                         \
                                 list_add_mint(l, (int *)v);                                     \
                                 break;                                                          \
-                            case M_CHAR:                                                        \
+                            case M_LONG:                                                        \
                                 list_add_mlong(l, (long *)v);                                   \
                                 break;                                                          \
-                            case M_CHAR:                                                        \
+                            case M_FLOAT:                                                       \
                                 list_add_mfloat(l, (float *)v);                                 \
                                 break;                                                          \
-                            case M_CHAR:                                                        \
+                            case M_DOUBLE:                                                      \
                                 list_add_mdouble(l, (double *)v);                               \
                                 break;                                                          \
-                            case M_CHAR:                                                        \
+                            case M_STRING:                                                      \
                                 list_add_mstring(l, (char *)v);                                 \
                                 break;                                                          \
-                            case M_CHAR:                                                        \
-                                list_add_mstruct(l, v);                                         \
+                            case M_STRUCT:                                                      \
                                 break;                                                          \
                         }
 
@@ -187,12 +186,78 @@ List *list_create_from_string(const char *sourse, VAL_TYPE type) {
     return list;
 }
 
-List *list_create_from_array(void **sourse, VAL_TYPE type, int size);
-List *list_set_concurrency(List *list, boolean concurrensy);
+List *list_create_from_array(void **sourse, VAL_TYPE type, int size) {
+    List *list = (List *) malloc(sizeof(List));
+    list->len = 0;
+    list->max_len = size > LIST_STANDARD_LEN ? size : LIST_STANDARD_LEN;
+    list->type = type;
+    list->list = (void **) malloc(sizeof(void *) * list->max_len);
+
+    int buf_i = 0;
+    long buf_l = 0;
+    double buf_d = 0.0;
+    int i = 0;
+
+    if (type == M_STRUCT) {
+        i = 1;
+    }
+
+    for(; i < size; i++) {
+       switch(type) {
+           case M_CHAR:
+               list_add_mchar(list, sourse[i]);
+               break;
+            case M_SHORT:
+               buf_i = atoi(sourse[i]);
+               list_add_mshort(list, (short *) &buf_i);
+               break;
+            case M_INT:
+               buf_i = atoi(sourse[i]);
+               list_add_mint(list, &buf_i);
+               break;
+            case M_LONG:
+               buf_l = atol(sourse[i]);
+               list_add_mlong(list, &buf_l);
+               break;
+            case M_FLOAT:
+               buf_d = atof(sourse[i]);
+               list_add_mfloat(list, (float *) &buf_d);
+               break;
+            case M_DOUBLE:
+               buf_d = atof(sourse[i]);
+               list_add_mdouble(list, (double *) &buf_d);
+               break;
+            case M_STRING:
+               list_add_mstring(list, sourse[i]);
+               break;
+            case M_STRUCT:
+               list_add_mstruct(list, sourse[i], *(int *) sourse[i]);
+               break;
+       } 
+    }
+
+    return list;
+}
+List *list_set_concurrency(List *list, boolean concurrensy) {
+    list->concurrent = concurrensy;
+    return list;
+}
 
 
-List *list_add(List *list, void *value);
-List *list_add_list(List *__restrict sourse, List *dest);
+List *list_add(List *list, void *value) {
+    Generic_add(list, value);
+
+    return list;
+}
+
+List *list_add_s(List *list, void *value, int size) {
+    list_add_mstruct(list, value, size);
+    return list;
+}
+
+List *list_add_list(List *__restrict sourse, List *dest) {
+
+}
 List *list_contein(List *list, void *value);
 List *list_remove(List *list, void *value);
 void list_free_all(List *list);

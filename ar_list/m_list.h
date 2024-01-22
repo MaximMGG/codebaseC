@@ -40,11 +40,14 @@ List *list_create(unsigned int len, VAL_TYPE type);
 */
 List *list_create_from_string(const char *sourse, VAL_TYPE type);
 // create list from array, need to set "size" of array
+// if type = M_STRUCT: sourse[0] should be int* to size of struct
 List *list_create_from_array(void **sourse, VAL_TYPE type, int size);
 //set concurrensy functional
 List *list_set_concurrency(List *list, boolean concurrensy);
 //add value in List
 List *list_add(List *list, void *value);
+// add to list a struct, need to set "size" of struct
+List *list_add_s(List *list, void *value, int size);
 //add to List all values from list dest, VAL_TYPE should be same with sourse List
 List *list_add_list(List *__restrict sourse, List *dest);
 //return true if List contein value
