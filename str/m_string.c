@@ -1,6 +1,7 @@
 #include "m_string.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 STR_ERR STR_ERROR;
 
@@ -30,6 +31,18 @@ str str_concat(str d, str s) {
 
     return d;
 }
+
+str str_format(str s, str fmt, ...) {
+    va_list li;
+    va_start(li, fmt);
+
+
+
+    
+
+    return s;
+}
+
 
 str str_err() {
     str err = STR("Def err");
