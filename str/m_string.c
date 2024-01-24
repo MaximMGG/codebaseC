@@ -115,6 +115,7 @@ str str_format(str s, str fmt, ...) {
         }
 
     }
+    s.len = strlen(s.str);
     return s;
 }
 
@@ -160,4 +161,9 @@ str **str_split(str d, char symbol) {
 
     }
     return arr;
+}
+
+void str_free(str *s) {
+    free(s->str);
+    s->len = 0;
 }

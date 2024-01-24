@@ -24,7 +24,8 @@ str str_format(str d, str fmt, ...);
 str **str_split(str d, char symbol);
 //return STR_ERR messag
 str str_err();
-
+//free memory
+void str_free(str *s);
 
 
 #endif //_M_STRING_
