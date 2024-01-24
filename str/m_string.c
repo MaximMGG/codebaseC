@@ -45,52 +45,79 @@ str str_concat(str d, str s) {
 
 static str str_format_insert(str dest, void *buf, enum types type) {
     char buf_s[1024];
-    for(int i = 0; ; i++) {
-        if (dest.str[i] == '%') {
-            memcpy(&buf_s[i], buf, type == STRING ? strlen((char *) buf) : type);
+    int copy = 1;
+    for(int i = 0, j = 0; ; i++) {
+        if (dest.str[i] == '\0') {
+            buf_s[j] = '\0';
+            break;
         }
-        buf_s[i] = dest.str[i];
+        if (dest.str[i] == '%' && copy == 1) {
+            int len = strlen(buf);
+            memcpy(&buf_s[i], buf, len);
+            i++;
+            if (dest.str[i] == 'l') i += 2;
+            else i++; 
+            j += len;
+            copy = 0;
+        }
+        buf_s[j++] = dest.str[i];
     }
+    str res = STR(buf_s, res);
+    return res;
 }
 
 str str_format(str s, str fmt, ...) {
     va_list li;
     va_start(li, fmt);
     s.str = fmt.str;
-    str res = STR(fmt.str);
 
     for(int i = 0; i < fmt.len; i++) {
         if (fmt.str[i] == '%') {
-            str temp = STR(&fmt.str[i]);
             switch(fmt.str[i + 1]) {
                 case 'd': {
                               int temp_i = va_arg(li, int);
-                              s = str_format_insert(temp, (void *) &temp_i, INT);
+                              char buf[24];
+                              snprintf(buf, 24, "%d", temp_i);
+                              s = str_format_insert(s, (void *) buf, STRING);
                               i++;
                               break;
                           }
                 case 'f': {
                               float temp_f = va_arg(li, double);
-                              s = str_format_insert(temp, (void *) &temp_f, FLOAT);
+                              char buf[24];
+                              snprintf(buf, 24, "%f", temp_f);
+                              s = str_format_insert(s, (void *) buf, STRING);
                               i++;
                               break;
                           }
                 case 'l': {
                               if (fmt.str[i + 2] == 'f') {
                                   double temp_d = va_arg(li, double);
-                                  s = str_format_insert(temp, (void *) &temp_d, DOUBLE);
+                                  char buf[24];
+                                  snprintf(buf, 24, "%lf", temp_d);
+                                  s = str_format_insert(s, (void *) buf, STRING);
                                   i += 2;
                                   break;
-                              } else if (fmt.str[i == 2] == 'd') {
+                              } else if (fmt.str[i + 2] == 'd') {
+                                  long temp_l = va_arg(li, long);
+                                  char buf[24];
+                                  snprintf(buf, 24, "%ld", temp_l);
+                                  s = str_format_insert(s, (void *) buf, LONG);
                                   i += 2;
                                   break;
                               }
                           }
                 case 'c': {
+                              char temp_c = (char) va_arg(li, int);
+                              char buf[24];
+                              snprintf(buf, 24, "%c", temp_c);
+                              s = str_format_insert(s, (void *) &temp_c, CHAR);
                               i++;
                               break;
                           }
                 case 's': {
+                              char *temp_s = (char *) va_arg(li, char*);
+                              s = str_format_insert(s, (void *) temp_s, STRING);
                               i++;
                               break;
                           }
@@ -103,15 +130,15 @@ str str_format(str s, str fmt, ...) {
 
 
 str str_err() {
-    str err = STR("Def err");
+    str err = STR("Def err", err);
     switch (STR_ERROR) {
         case MEM_ALLOC_ERR: {
-            str e = STR("Memory allocation error");
+            str e = STR("Memory allocation error", e);
             err = e;
             break;
             }
         case CONCAT_ERR: {
-            str e = STR("String concationation error");
+            str e = STR("String concationation error", e);
             err = e;
             break;
             }

@@ -4,8 +4,8 @@
 
 int main() {
 
-    str a = STR("Hello");
-    str b = STR(" Bill");
+    str a = STR("Hello", a);
+    str b = STR(" Bill", b);
 
     printf("sting is %s, len is %d\n", a.str, a.len);
     printf("sting is %s, len is %d\n", b.str, b.len);
@@ -17,9 +17,12 @@ int main() {
 
     printf("string is %s, len is %d\n", a.str, a.len);
 
-    str fmt = STR("Name is %s, age is %d, time is %ld");
+    str fmt = STR("Name is %s, age is %d, time is %ld", fmt);
+    char *name = "Billy";
+    int age = 23;
+    long time = 123141414141444;
 
-    a = str_format(a, fmt, "Billy", 23, 141414141414141);
+    a = str_format(a, fmt, name, age, time);
 
     printf("%s\n", a.str);
 
