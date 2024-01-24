@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdio.h>
 
 STR_ERR STR_ERROR;
 
@@ -35,11 +36,55 @@ str str_concat(str d, str s) {
 str str_format(str s, str fmt, ...) {
     va_list li;
     va_start(li, fmt);
+    s.str = fmt.str;
 
+    char buf_1[1024];
+    char buf_2[1024];
 
+    for(int i = 0; i < fmt.len; i++) {
+        if (fmt.str[i] == '%') {
+            switch(fmt.str[i + 1]) {
+                case 'd': {
+                              snprintf(buf_1, 1024, s.str, (int) va_arg(li, int));
+                              s.str = buf_1;
+                              i++;
+                              break;
+                          }
+                case 'f': {
+                              snprintf(buf_1, 1024, s.str, (float) va_arg(li, double));
+                              s.str = buf_1;
+                              i++;
+                              break;
+                          }
+                case 'l': {
+                              if (fmt.str[i + 2] == 'f') {
+                                  snprintf(buf_1, 1024, s.str, (double) va_arg(li, double));
+                                  s.str = buf_1;
+                                  i += 2;
+                                  break;
+                              } else if (fmt.str[i == 2] == 'd') {
+                                  snprintf(buf_1, 1024, s.str, (long) va_arg(li, long));
+                                  s.str = buf_1;
+                                  i += 2;
+                                  break;
+                              }
+                          }
+                case 'c': {
+                              snprintf(buf_1, 1024, s.str, (char) va_arg(li, int));
+                              s.str = buf_1;
+                              i++;
+                              break;
+                          }
+                case 's': {
+                              snprintf(buf_1, 1024, s.str, (char *) va_arg(li, char*));
+                              s.str = buf_1;
+                              i++;
+                              break;
+                          }
+            }
+        }
 
-    
-
+    }
     return s;
 }
 
