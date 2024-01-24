@@ -11,6 +11,15 @@ enum errors{
     MEM_ALLOC_ERR
 };
 
+enum types {
+    INT, 
+    FLOAT,
+    DOUBLE,
+    LONG,
+    CHAR,
+    SHORT,
+    STRING
+};
 
 str str_concat(str d, str s) {
     int d_len = strlen(d.str);
@@ -33,51 +42,49 @@ str str_concat(str d, str s) {
     return d;
 }
 
+
+static str str_format_insert(str dest, void *buf, enum types type) {
+    char buf_s[1024];
+}
+
 str str_format(str s, str fmt, ...) {
     va_list li;
     va_start(li, fmt);
     s.str = fmt.str;
-
-    char buf_1[1024];
-    char buf_2[1024];
+    str res = STR(fmt.str);
 
     for(int i = 0; i < fmt.len; i++) {
         if (fmt.str[i] == '%') {
+            str temp = STR(&fmt.str[i]);
             switch(fmt.str[i + 1]) {
                 case 'd': {
-                              snprintf(buf_1, 1024, s.str, (int) va_arg(li, int));
-                              s.str = buf_1;
+                              int temp_i = va_arg(li, int);
+                              s = str_format_insert(temp, (void *) &temp_i, INT);
                               i++;
                               break;
                           }
                 case 'f': {
-                              snprintf(buf_1, 1024, s.str, (float) va_arg(li, double));
-                              s.str = buf_1;
+                              float temp_f = va_arg(li, double);
+                              s = str_format_insert(temp, (void *) &temp_f, FLOAT);
                               i++;
                               break;
                           }
                 case 'l': {
                               if (fmt.str[i + 2] == 'f') {
-                                  snprintf(buf_1, 1024, s.str, (double) va_arg(li, double));
-                                  s.str = buf_1;
+                                  double temp_d = va_arg(li, double);
+                                  s = str_format_insert(temp, (void *) &temp_d, DOUBLE);
                                   i += 2;
                                   break;
                               } else if (fmt.str[i == 2] == 'd') {
-                                  snprintf(buf_1, 1024, s.str, (long) va_arg(li, long));
-                                  s.str = buf_1;
                                   i += 2;
                                   break;
                               }
                           }
                 case 'c': {
-                              snprintf(buf_1, 1024, s.str, (char) va_arg(li, int));
-                              s.str = buf_1;
                               i++;
                               break;
                           }
                 case 's': {
-                              snprintf(buf_1, 1024, s.str, (char *) va_arg(li, char*));
-                              s.str = buf_1;
                               i++;
                               break;
                           }
