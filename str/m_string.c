@@ -11,16 +11,6 @@ enum errors{
     MEM_ALLOC_ERR
 };
 
-enum types {
-    INT = 4, 
-    FLOAT = 4,
-    DOUBLE = 8,
-    LONG = 8,
-    CHAR = 1,
-    SHORT = 2,
-    STRING
-};
-
 str str_concat(str d, str s) {
     int d_len = strlen(d.str);
     int s_len = strlen(s.str);
@@ -43,7 +33,7 @@ str str_concat(str d, str s) {
 }
 
 
-static str str_format_insert(str dest, void *buf, enum types type) {
+static str str_format_insert(str dest, void *buf) {
     char buf_s[1024];
     int copy = 1;
     for(int i = 0, j = 0; ; i++) {
@@ -78,7 +68,7 @@ str str_format(str s, str fmt, ...) {
                               int temp_i = va_arg(li, int);
                               char buf[24];
                               snprintf(buf, 24, "%d", temp_i);
-                              s = str_format_insert(s, (void *) buf, STRING);
+                              s = str_format_insert(s, (void *) buf);
                               i++;
                               break;
                           }
@@ -86,7 +76,7 @@ str str_format(str s, str fmt, ...) {
                               float temp_f = va_arg(li, double);
                               char buf[24];
                               snprintf(buf, 24, "%f", temp_f);
-                              s = str_format_insert(s, (void *) buf, STRING);
+                              s = str_format_insert(s, (void *) buf);
                               i++;
                               break;
                           }
@@ -95,14 +85,14 @@ str str_format(str s, str fmt, ...) {
                                   double temp_d = va_arg(li, double);
                                   char buf[24];
                                   snprintf(buf, 24, "%lf", temp_d);
-                                  s = str_format_insert(s, (void *) buf, STRING);
+                                  s = str_format_insert(s, (void *) buf);
                                   i += 2;
                                   break;
                               } else if (fmt.str[i + 2] == 'd') {
                                   long temp_l = va_arg(li, long);
                                   char buf[24];
                                   snprintf(buf, 24, "%ld", temp_l);
-                                  s = str_format_insert(s, (void *) buf, LONG);
+                                  s = str_format_insert(s, (void *) buf);
                                   i += 2;
                                   break;
                               }
@@ -111,13 +101,13 @@ str str_format(str s, str fmt, ...) {
                               char temp_c = (char) va_arg(li, int);
                               char buf[24];
                               snprintf(buf, 24, "%c", temp_c);
-                              s = str_format_insert(s, (void *) &temp_c, CHAR);
+                              s = str_format_insert(s, (void *) &temp_c);
                               i++;
                               break;
                           }
                 case 's': {
                               char *temp_s = (char *) va_arg(li, char*);
-                              s = str_format_insert(s, (void *) temp_s, STRING);
+                              s = str_format_insert(s, (void *) temp_s);
                               i++;
                               break;
                           }
@@ -144,4 +134,30 @@ str str_err() {
             }
     }
     return err;
+}
+
+str **str_split(str d, char symbol) { 
+    char buf[264];
+    int size = 20;
+    int count = 0;
+    str **arr = (str **) malloc(sizeof(str *) * size);
+
+    for(int i = 0; i < d.len; i++) {
+        if (d.str[i] == symbol) {
+            buf[i] = '\0';
+            int buf_len = strlen(buf);
+            arr[count] = (str *) malloc(sizeof(str));
+            arr[count]->str = (char *) malloc(sizeof(char) * buf_len);
+            strcpy(arr[count]->str, buf);
+            arr[count++]->len = buf_len;
+        }
+        buf[i] = d.str[i];
+
+        if (count == size) {
+            size <<= 1;
+            arr = (str **) realloc(arr, sizeof(str *) * size);
+        }
+
+    }
+    return arr;
 }

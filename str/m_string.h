@@ -13,8 +13,8 @@ typedef int STR_ERR;
 extern STR_ERR STR_ERROR;
 
 #define STR(a, s) {.len = (strlen(a))};                                      \
-                    s.str = (char *) malloc(sizeof(char) * strlen(a));    \
-                    strcpy(s.str, a);
+                    s.str = (char *) malloc(sizeof(char) * strlen(a));       \
+                    strcpy(s.str, a);                                        \
 
 //concatinate two string and return string d
 str str_concat(str d, str s);
