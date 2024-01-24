@@ -12,12 +12,12 @@ enum errors{
 };
 
 enum types {
-    INT, 
-    FLOAT,
-    DOUBLE,
-    LONG,
-    CHAR,
-    SHORT,
+    INT = 4, 
+    FLOAT = 4,
+    DOUBLE = 8,
+    LONG = 8,
+    CHAR = 1,
+    SHORT = 2,
     STRING
 };
 
@@ -45,6 +45,12 @@ str str_concat(str d, str s) {
 
 static str str_format_insert(str dest, void *buf, enum types type) {
     char buf_s[1024];
+    for(int i = 0; ; i++) {
+        if (dest.str[i] == '%') {
+            memcpy(&buf_s[i], buf, type == STRING ? strlen((char *) buf) : type);
+        }
+        buf_s[i] = dest.str[i];
+    }
 }
 
 str str_format(str s, str fmt, ...) {
