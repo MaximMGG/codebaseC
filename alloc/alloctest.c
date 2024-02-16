@@ -34,7 +34,7 @@ int main() {
     aap->b = 123;
     aap->c = 123123123123;
     aap->name = al_get_strmem(a, "Paul");
-    al_free(a);
+    al_dealloc(a);
 
     return 0;
 }

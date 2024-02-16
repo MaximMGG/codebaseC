@@ -60,7 +60,7 @@ allocator *allocator_alloc(size_t size) {
     }
     a->size = size;
     a->mem_left = size;
-
+    allocator_mem_set(a->cur_pointer, 0xdc, size);
     return a;
 }
 
@@ -69,14 +69,20 @@ static void *al_get_chunk(allocator *al, size_t size) {
     unsigned int count = 0;
     byte ref = 0xdc;
     byte *memp = al->cur_pointer;
-    for(int i = 0; i < al->size; i++) {
+    byte *new = null;
+    for(int i = 0; i < al->size; i++, memp++) {
         if (*memp == ref) {
             count++;
+            if (new == null) {
+                new = memp;
+            } 
         } else {
             count = 0;
+            new = null;
         }
         if (count == size) {
-            return memp;
+            mtx_unlock(&al->allocator_mutex);
+            return new;
         }
     }
     mtx_unlock(&al->allocator_mutex);
@@ -84,28 +90,23 @@ static void *al_get_chunk(allocator *al, size_t size) {
 }
 
 void *al_get_mem(allocator *al, size_t size) {
-    mtx_lock(&al->allocator_mutex);
     if (size > al->size) {
         allocator_error = ALLOCATOR_OVERSIZE_ERROR;
-        mtx_unlock(&al->allocator_mutex);
         allocator_error_print();
         return null;
     }
     if (size > al->mem_left) {
         allocator_error = ALLOCATOR_LEFTMEM_ERROR;
-        mtx_unlock(&al->allocator_mutex);
         allocator_error_print();
         return null;
     }
     void *p = al_get_chunk(al, size);
     if (p == null) {
         allocator_error = ALLOCATOR_NOT_FULLSIZE_CHUNK;
-        mtx_unlock(&al->allocator_mutex);
         return null;
     }
     al->mem_left -= size;
     allocator_mem_set(p, 0, size);
-    mtx_unlock(&al->allocator_mutex);
     return p;
 }
 
@@ -113,26 +114,22 @@ void *al_get_strmem(allocator *al, char *str) {
     if (str == null) {
         return null;
     }
-    mtx_lock(&al->allocator_mutex);
     unsigned int size = allocator_strlen(str);
     if (size > al->size) {
         allocator_error = ALLOCATOR_OVERSIZE_ERROR;
-        mtx_unlock(&al->allocator_mutex);
         allocator_error_print();
         return null;
     }
     if (size > al->mem_left) {
         allocator_error = ALLOCATOR_LEFTMEM_ERROR;
-        mtx_unlock(&al->allocator_mutex);
         allocator_error_print();
         return null;
     }
-    void *p = al->cur_pointer + (al->size - al->mem_left);
+    void *p = al_get_chunk(al, size + 1);
     al->mem_left -= size + 1;
     allocator_mem_cpy(p, str, size);
     char *sp = p;
     sp[size] = '\0';
-    mtx_unlock(&al->allocator_mutex);
 
     return p;
 }
