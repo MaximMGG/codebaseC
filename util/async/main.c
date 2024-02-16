@@ -39,6 +39,7 @@ int main() {
     async(&print2);
     async(&print3);
     async(&print4);
+    thrd_sleep(&(struct timespec){.tv_sec = 10}, NULL);
 
     async_join;
     printf("Finish job");

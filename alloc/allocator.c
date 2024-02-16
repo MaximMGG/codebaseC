@@ -1,7 +1,9 @@
 #include "allocator.h"
 #include <stdio.h>
-static int allocator_error = 0;
 
+
+
+static int allocator_error = 0;
 #define byte char
 typedef byte bool;
 #define true 1

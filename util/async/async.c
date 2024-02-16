@@ -10,6 +10,7 @@
 static mtx_t mut[POOL_SIZE];
 static mtx_t man_m;
 static thrd_t thrd_pool[POOL_SIZE];
+static thrd_t man;
 static Queue *q = NULL;
 static bool work = false;
 static struct func_poll {
@@ -20,7 +21,6 @@ static struct func_poll {
 
 static int worker_0(void *func) {
     puts("worker 0 start");
-    mtx_lock(&mut[0]);
     void *(*job)(void *) = func;
     int b = 1;
     if (job(&b)) {}
@@ -30,7 +30,6 @@ static int worker_0(void *func) {
 }
 static int worker_1(void *func) {
     puts("worker 1 start");
-    mtx_lock(&mut[1]);
     void *(*job)(void *) = func;
     int b = 2;
     if (job(&b)) {}
@@ -40,7 +39,6 @@ static int worker_1(void *func) {
 }
 static int worker_2(void *func) {
     puts("worker 2 start");
-    mtx_lock(&mut[2]);
     void *(*job)(void *) = func;
     int b = 3;
     if (job(&b)) {}
@@ -50,7 +48,6 @@ static int worker_2(void *func) {
 }
 static int worker_3(void *func) {
     puts("worker 3 start");
-    mtx_lock(&mut[3]);
     void *(*job)(void *) = func;
     int b = 3;
     if (job(&b)) {}
@@ -70,19 +67,19 @@ static void init_pool() {
 
 static int _thread_manage(void *man) {
     puts("Thred manager init");
-    // pool[0] = (thrd_t) malloc(sizeof(thrd_t));
-    // pool[1] = (thrd_t) malloc(sizeof(thrd_t));
-    // pool[2] = (thrd_t) malloc(sizeof(thrd_t));
-    // pool[3] = (thrd_t) malloc(sizeof(thrd_t));
-    // thrd_t pool[POOL_SIZE];
     int cur_worker = 0;
+    int check = 0;
     while(work) {
         if (get_size(q) == 0) {
-            thrd_sleep(&(struct timespec){.tv_nsec = 20000}, NULL);
+            thrd_sleep(&(struct timespec){.tv_nsec = 2000000}, NULL);
             printf("I am sleep");
         }
         while(get_size(q) != 0) {
-            // mtx_trylock(&mut[cur_worker]);
+            if ((check = mtx_trylock(&mut[cur_worker])) == thrd_busy) {
+                if (cur_worker >= 4) cur_worker = 0;
+                else cur_worker++; 
+                continue;
+            }
             thrd_create(&thrd_pool[cur_worker], POOL.pool[cur_worker], queue_get(q));
             cur_worker ++;
             if (cur_worker >= 4) {
@@ -99,16 +96,15 @@ void _thread_prepare(void *func) {
     if (q == NULL) q = queue_create();
     queue_add(q, func);
     if (work == false) {
-        thrd_t man = {0};
         work = true;
         init_pool();
         thrd_create(&man, _thread_manage, NULL);
-        // _thread_manage(NULL);
     }
 }
 
 void _finish_work() {
     work = false;
+    thrd_join(man, 0);
     for(int i = 0; i < POOL_SIZE; i++) {
         thrd_join(thrd_pool[i], 0);
         printf("join %i thread\n", i);

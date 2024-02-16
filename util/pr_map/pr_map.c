@@ -90,7 +90,7 @@ Property *parse_property(char *line) {
     while(*p != '=') {
         p++;
     }
-    prop->key = (char *) malloc(line - p + 1);
+    prop->key = (char *) malloc(p - line + 1);
     prop->val = (char *) malloc(len - (unsigned int)(line - p));
     char *ptr = line;
     char *buf = prop->key;
@@ -100,7 +100,7 @@ Property *parse_property(char *line) {
     p++;
     *buf = '\0';
     buf = prop->val;
-    while(*p != '\0') {
+    while(*p != '\0' && *p != '\n') {
         *(buf++) = *(p++);
     }
     *buf = '\0';

@@ -25,10 +25,12 @@ int main() {
         printf("%s\n", al_get_error());
     }
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 16; i++) {
         darr[i] = (double) i;
     }
+    al_free(a, arr, 40);
     struct app *aap = al_get_mem(a, sizeof(struct app));
+
     if (aap == null) printf("%s\n", al_get_error());
     aap->a = name;
     aap->b = 123;
