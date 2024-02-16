@@ -20,6 +20,7 @@ typedef enum {
 
 allocator *allocator_alloc(size_t size);
 void *al_get_mem(allocator *al, size_t size);
+void *al_get_strmem(allocator *al, char *str);
 void al_free(allocator* al);
 char *al_get_error();
 
