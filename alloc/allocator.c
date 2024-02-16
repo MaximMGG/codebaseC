@@ -1,4 +1,5 @@
 #include "allocator.h"
+#include <stdio.h>
 static int allocator_error = 0;
 
 #define byte char
@@ -25,8 +26,23 @@ static unsigned int allocator_strlen(char *str) {
     return i;    
 }
 
-[[noreturn]]void allocator_error_print() {
+_Noreturn void allocator_error_print() {
+    switch (allocator_error) {
+        case ALLOCATOR_MALLOC_ERROR: {
+            allocator_error = 0;
+            fprintf(stderr, "ALLOCATOR: malloc() func error\n");
+        }
+        case ALLOCATOR_OVERSIZE_ERROR: {
+            allocator_error = 0;
+            fprintf(stderr, "ALLOCATOR: size is bigger then allocator->size\n");
+        }
+        case ALLOCATOR_LEFTMEM_ERROR: {
+            allocator_error = 0;
+            fprintf(stderr, "ALLOCATOR: size is bigger then allocator->mem_left\n");
+        }
+    }
 
+    exit(1);
 }
 
 allocator *allocator_alloc(size_t size) {
@@ -49,10 +65,12 @@ allocator *allocator_alloc(size_t size) {
 void *al_get_mem(allocator *al, size_t size) {
     if (size > al->size) {
         allocator_error = ALLOCATOR_OVERSIZE_ERROR;
+        allocator_error_print();
         return null;
     }
     if (size > al->mem_left) {
         allocator_error = ALLOCATOR_LEFTMEM_ERROR;
+        allocator_error_print();
         return null;
     }
     void *p = al->cur_pointer + (al->size - al->mem_left);
@@ -69,10 +87,12 @@ void *al_get_strmem(allocator *al, char *str) {
     unsigned int size = allocator_strlen(str);
     if (size > al->size) {
         allocator_error = ALLOCATOR_OVERSIZE_ERROR;
+        allocator_error_print();
         return null;
     }
     if (size > al->mem_left) {
         allocator_error = ALLOCATOR_LEFTMEM_ERROR;
+        allocator_error_print();
         return null;
     }
     void *p = al->cur_pointer + (al->size - al->mem_left);
