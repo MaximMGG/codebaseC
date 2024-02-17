@@ -1,8 +1,8 @@
 LIB = lib_util.a
 SRC = ar_list/ar_list.c pr_map/pr_map.c queue/queue.c
-OBJ = ar_list.o pr_map.o queue.o
+OBJ = ar_list.o pr_map.o queue.o m_string.o
 
-all = ar_list.o pr_map.o queue.o $(LIB)
+all = ar_list.o pr_map.o queue.o m_string.o $(LIB)
  
 $(LIB): $(OBJ) 
 	ar rcs $@ $^ 
@@ -19,6 +19,8 @@ pr_map.o:
 queue.o:
 	gcc -o $@ -c queue/queue.c -g
 
+m_string.o:
+	gcc -o $@ -c str/m_string.c -g
 
 clean:
 	rm *.a *.o
@@ -29,4 +31,5 @@ deploy:
 	sudo cp ar_list/ar_list.h /usr/include/util/
 	sudo cp pr_map/pr_map.h /usr/include/util/
 	sudo cp queue/queue.h /usr/include/util/
+	sudo cp str/m_string.h /usr/include/util/
 	sudo cp	util.h /usr/include/util
