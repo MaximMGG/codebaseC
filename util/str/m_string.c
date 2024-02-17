@@ -34,11 +34,13 @@ str *str_concat(str *d, str *s) {
 
 str *str_remove_all(str *d, char symbol) {
     char buf[d->len];
-    for(int i = 0, j = 0; i < d->len; i++) {
+    int i = 0, j = 0;
+    for( ; i < d->len; i++) {
         if (d->str[i] != symbol) {
             buf[j++] = d->str[i];
         }
     }
+    buf[j] = '\0';
     str_free(d);
     str *new = STR(buf, new);
     return new;
