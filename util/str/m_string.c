@@ -34,7 +34,7 @@ str *str_concat(str *d, str *s) {
 
 str *str_remove_all(str *d, char symbol) {
     char buf[d->len];
-    for(int i = 0, j = 0; i < 0 ; i++) {
+    for(int i = 0, j = 0; i < d->len; i++) {
         if (d->str[i] != symbol) {
             buf[j++] = d->str[i];
         }
@@ -163,19 +163,27 @@ str **str_split(str *d, char symbol, int *count) {
     *count = 0;
     str **arr = (str **) malloc(sizeof(str *) * size);
 
-    for(int i = 0; i < d->len; i++) {
+    for(int i = 0, j = 0; j < 264 ; i++) {
         if (d->str[i] == symbol) {
-            buf[i] = '\0';
+            buf[j] = '\0';
             str *temp = STR(buf, temp);
-            arr[*count++] = temp;
+            arr[(*count)++] = temp;
+            j = 0;
+            continue;
         }
-        buf[i] = d->str[i];
+        if (d->str[i] == '\n' || d->str[i] == '\0') {
+            buf[j] = '\0';
+            str *temp = STR(buf, temp);
+            arr[(*count)++] = temp;
+            j = 0;
+            break;
+        }
+        buf[j++] = d->str[i];
 
         if (*count == size) {
             size <<= 1;
             arr = (str **) realloc(arr, sizeof(str *) * size);
         }
-
     }
     return arr;
 }
