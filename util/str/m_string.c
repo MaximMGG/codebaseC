@@ -157,24 +157,21 @@ str *str_err() {
     return err;
 }
 
-str **str_split(str *d, char symbol) { 
+str **str_split(str *d, char symbol, int *count) { 
     char buf[264];
     int size = 20;
-    int count = 0;
+    *count = 0;
     str **arr = (str **) malloc(sizeof(str *) * size);
 
     for(int i = 0; i < d->len; i++) {
         if (d->str[i] == symbol) {
             buf[i] = '\0';
-            int buf_len = strlen(buf);
-            arr[count] = (str *) malloc(sizeof(str));
-            arr[count]->str = (char *) malloc(sizeof(char) * buf_len);
-            strcpy(arr[count]->str, buf);
-            arr[count++]->len = buf_len;
+            str *temp = STR(buf, temp);
+            arr[*count++] = temp;
         }
         buf[i] = d->str[i];
 
-        if (count == size) {
+        if (*count == size) {
             size <<= 1;
             arr = (str **) realloc(arr, sizeof(str *) * size);
         }
@@ -218,4 +215,13 @@ str *str_new_val(str *d, char *value) {
         d->len = v_len;
     }
     return d;
+}
+
+str *str_copy(str *d) {
+    str *new = malloc(sizeof(str));
+    new->str = malloc(d->len);
+    new->len = d->len;
+    strcpy(new->str, d->str);
+
+    return new;
 }

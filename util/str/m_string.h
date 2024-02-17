@@ -27,9 +27,11 @@ str *str_concat(str *d, str *s);
 //formatting string with fmt format
 str *str_format(str *d, str *fmt, ...);
 //return str arr split by symbol
-str **str_split(str *d, char symbol);
+str **str_split(str *d, char symbol, int *count);
 //return STR_ERR messag
 str *str_err();
+//return copy of str
+str *str_copy(str *d);
 //remove all symbols from string
 str *str_remove_all(str *d, char symbol);
 //return 1 if string d starts with "pattern"
