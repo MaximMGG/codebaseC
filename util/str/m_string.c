@@ -15,7 +15,7 @@ str *str_concat(str *d, str *s) {
     int d_len = strlen(d->str);
     int s_len = strlen(s->str);
     
-    char *temp = (char *) malloc(d_len + s_len - 1);
+    char *temp = (char *) malloc(d_len + s_len + 1);
     if (temp == NULL) {
         STR_ERROR = MEM_ALLOC_ERR;
     }
@@ -32,7 +32,7 @@ str *str_concat(str *d, str *s) {
     return d;
 }
 
-str *str_remove_all(str *d, char symbol) {
+str str_remove_all(str *d, char symbol) {
     char buf[d->len];
     int i = 0, j = 0;
     for( ; i < d->len; i++) {
@@ -42,13 +42,13 @@ str *str_remove_all(str *d, char symbol) {
     }
     buf[j] = '\0';
     str_free(d);
-    str *new = STR(buf, new);
+    str new = STR(buf, new);
     return new;
 }
 
-static str *str_format_insert(str *dest, void *buf, size_t buf_size) {
+static str str_format_insert(str *dest, void *buf, size_t buf_size) {
     _Bool insert = 0;
-    char l_buf[dest->len + buf_size];
+    char l_buf[dest->len + buf_size + 1];
     memset(l_buf, 0, dest->len + buf_size);
     char *s_buf = (char *) buf;
     for(int i = 0, j = 0; dest->str[i] != '\0'; i++) {
@@ -68,11 +68,12 @@ static str *str_format_insert(str *dest, void *buf, size_t buf_size) {
         l_buf[j++] = dest->str[i];
     }
     int buf_len = strlen(l_buf);
-    dest->str = (char *) realloc(dest->str, buf_len);
+    dest->str = (char *) realloc(dest->str, buf_len + 1);
     dest->len = buf_len;
     if (dest->str == NULL) {
         fprintf(stderr, "str_format_insert error, cant realloc string\n");
-        return NULL;
+        str b = STR(NULL, NULL);
+        return STR{NULL, NULL};
     }
     strcpy(dest->str, l_buf);
     return dest;
@@ -82,7 +83,7 @@ str *str_format(str *s, str *fmt, ...) {
     va_list li;
     va_start(li, fmt);
     str_free(s);
-    s = STR(fmt->str, s);
+    *s = STR(fmt->str, s);
 
     for(int i = 0; i < fmt->len; i++) {
         if (fmt->str[i] == '%') {
@@ -229,7 +230,7 @@ str *str_new_val(str *d, char *value) {
 
 str *str_copy(str *d) {
     str *new = malloc(sizeof(str));
-    new->str = malloc(d->len);
+    new->str = malloc(d->len + 1);
     new->len = d->len;
     strcpy(new->str, d->str);
 

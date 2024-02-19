@@ -1,7 +1,7 @@
 #ifndef _M_STRING_
 #define _M_STRING_
-#include <string.h>
-#include <stdlib.h>
+// #include <string.h>
+// #include <stdlib.h>
 
 typedef struct{
     char *str;
@@ -12,14 +12,14 @@ typedef int STR_ERR;
 
 extern STR_ERR STR_ERROR;
 
-// #define STR(a, s) {.len = (strlen(a))};                                      \
-//                     s.str = (char *) malloc(sizeof(char) * strlen(a));       \
-//                     strcpy(s.str, a);                                        \
-//
+#define STR(a, s) {.len = (strlen(a))};                                      \
+                    s.str = (char *) malloc(sizeof(char) * strlen(a) + 1);   \
+                    strcpy(s.str, a);                                        
 
-#define STR(a, s) (str *) malloc(sizeof(str));                                  \
-                    s->len = strlen(a); s->str = (char *) malloc(s->len);       \
-                    strcpy(s->str, a);
+
+// #define STR(a, s) (str *) malloc(sizeof(str));                                  \
+//                     s->len = strlen(a); s->str = (char *) malloc(s->len);       \
+//                     strcpy(s->str, a);
 
 str *str_new_val(str *d, char *value);
 //concatinate two string and return string d
