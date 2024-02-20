@@ -5,10 +5,24 @@
 #include <stdlib.h>
 //
 
+<<<<<<< HEAD
 #include <util/m_list.h>
 #include <util/queue.h>
 #include <util/pr_map.h>
 #include <util/m_string.h>
+=======
+//Types
+typedef char i8;
+typedef unsigned char u8;
+typedef short i16;
+typedef unsigned short u16;
+typedef int i32;
+typedef unsigned int u32;
+typedef long i64;
+typedef unsigned long u64;
+typedef void * pointer;
+//EndTypes
+>>>>>>> a0de0cf (create Linkedlist list)
 
 //try(a) if a < 0 or == NULL print ERROR in stderr
 #define tryc(c) if ((c) < 0) fprintf(stderr, "File: %s, Line: %d, %s ERROR\n", __FILE__, __LINE__, # c)
