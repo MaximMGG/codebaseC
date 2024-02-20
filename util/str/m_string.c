@@ -22,6 +22,7 @@ str *newstr(char *s) {
     str *new = (str *) malloc(sizeof(str));
     new->len = strlen(s);
     new->str = (char *) malloc(sizeof(char) * new->len + 1);
+    strcpy(new->str, s);
 
     return new;
 }
@@ -37,6 +38,7 @@ str *newstr_val(str *d, char *value) {
 
     d->len = strlen(value);
     d->str = (char *) malloc(sizeof(char) * d->len + 1);
+    strcpy(d->str, value);
 
     return d;
 }
@@ -130,8 +132,7 @@ void str_free(str *s) {
     } 
 }
 
-static void str_format_insert(str *d, char *data, int pos) {
-    int dlen = strlen(data);
+static void str_format_insert(str *d, char *data, int pos, int dlen) {
     char buf[d->len + dlen + 1];
 
     int bi = 0;
@@ -145,7 +146,14 @@ static void str_format_insert(str *d, char *data, int pos) {
         buf[bi] = data[i];
     }
 
-    while(d->str[di] != ' ') di++;
+    if (d->str[di] == '%') {
+        di++;
+        if (d->str[di] == 'l') {
+            di += 2;
+        } else {
+            di++;
+        }
+    }
 
     for( ; d->str[di] != '\0'; di++, bi++) {
         buf[bi] = d->str[di];
@@ -160,42 +168,38 @@ str *str_format(str *d, str *fmt, ...) {
     va_list li;
     va_start(li, fmt);
     char buf[200];
-    int pos = 0;
+    if (d == NULL) d = newstr(fmt->str);
 
     for(int i = 0; i < d->len; i++) {
         if (d->str[i] == '%') {
-            switch (d->str[++i]) {
+            switch (d->str[i + 1]) {
                 case 'd': {
                     snprintf(buf, 200, "%d", va_arg(li, int));
-                    pos = i - 1;
                 } break;
                 case 'f': {
                     snprintf(buf, 200, "%f", va_arg(li, double));
-                    pos = i - 1;
                 } break;
                 case 'c': {
                     buf[0] = (char) va_arg(li, int);
                     buf[1] = '\0';
-                    pos = i - 1;
                 } break;
                 case 'x': {
                     snprintf(buf, 200, "%x", va_arg(li, int));
-                    pos = i - 1;
                 } break;
                 case 's': {
                     snprintf(buf, 200, "%s", va_arg(li, char *));
-                    pos = i - 1;
                 } break;
                 case 'l': {
-                    if (d->str[++i] == 'd') {
+                    if (d->str[i + 2] == 'd') {
                         snprintf(buf, 200, "%ld", va_arg(li, long));
-                    } else if(d->str[i] == 'f') {
+                    } else if(d->str[i + 2] == 'f') {
                         snprintf(buf, 200, "%lf", va_arg(li, double));
                     }
-                    pos = i - 2;
                 } break;
             }
-            str_format_insert(d, buf, pos);
+            int buf_len = strlen(buf);
+            str_format_insert(d, buf, i++, buf_len);
+            i += buf_len - 1;
         }
     }
 

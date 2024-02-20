@@ -5,9 +5,10 @@
 #include <stdlib.h>
 //
 
-#include <util/ar_list.h>
+#include <util/m_list.h>
 #include <util/queue.h>
 #include <util/pr_map.h>
+#include <util/m_string.h>
 
 //try(a) if a < 0 or == NULL print ERROR in stderr
 #define tryc(c) if ((c) < 0) fprintf(stderr, "File: %s, Line: %d, %s ERROR\n", __FILE__, __LINE__, # c)
@@ -24,5 +25,6 @@ typedef char boolean;
 #define true 1
 #define false 0
 
+typedef char byte;
 
 #endif //_UTIL_H_
