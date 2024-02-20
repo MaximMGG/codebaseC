@@ -90,7 +90,7 @@ static int list_add_mdouble(List *list, double *du){
     return 0;
 }
 static int list_add_mstring(List *list, char *str){
-    char *temp = (char *) malloc(sizeof(char) * strlen(str));
+    char *temp = (char *) malloc(sizeof(char) * strlen(str) + 1);
     strcpy(temp, str);
     list->list[list->len++] = temp;
     CHECK(list);
@@ -123,7 +123,7 @@ static char **parse_values_from_string(const char *sourse, int *size) {
     for(int i = 0, j = 0; ;i++) {
         if (sourse[i] == ',') {
             buf[j] = '\0';
-            p_list[count] = (char *) malloc(strlen(buf));
+            p_list[count] = (char *) malloc(strlen(buf) + 1);
             strcpy(p_list[count++], buf);
             if (count == parse_len) {
                 count <<= 1;
@@ -134,7 +134,7 @@ static char **parse_values_from_string(const char *sourse, int *size) {
         }
         if (sourse[i] == '\0') {
             buf[j] = '\0';
-            p_list[count] = (char *) malloc(strlen(buf));
+            p_list[count] = (char *) malloc(strlen(buf) + 1);
             strcpy(p_list[count++], buf);
             break;
         }

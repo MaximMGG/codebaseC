@@ -1,29 +1,32 @@
 LIB = lib_util.a
-SRC = ar_list/m_list.c pr_map/pr_map.c queue/queue.c
-OBJ = m_list.o pr_map.o queue.o m_string.o
+SRC = ar_list/m_list.c pr_map/pr_map.c queue/queue.c str/m_string.c
+OBJ = $(patsubst %.c, %.o, $(SRC))
 
-all = m_list.o pr_map.o queue.o m_string.o $(LIB)
+all = $(LIB)
  
 $(LIB): $(OBJ) 
-	ar rcs $@ $^ 
+	ar rcs $@ $^
 
 # $(OBJ): ar_list/ar_list.c pr_map/pr_map.c queue/queue.c
 # 	gcc -o $@ -c $< -g
 
-m_list.o:
-	gcc -o $@ -c ar_list/m_list.c -g
+# m_list.o:
+# 	gcc -o $@ -c ar_list/m_list.c -g
+#
+# pr_map.o:
+# 	gcc -o $@ -c pr_map/pr_map.c -g
+#
+# queue.o:
+# 	gcc -o $@ -c queue/queue.c -g
+#
+# m_string.o:
+# 	gcc -o $@ -c str/m_string.c -g
 
-pr_map.o:
-	gcc -o $@ -c pr_map/pr_map.c -g
-
-queue.o:
-	gcc -o $@ -c queue/queue.c -g
-
-m_string.o:
-	gcc -o $@ -c str/m_string.c -g
+%.o: %.c
+	gcc -o $@ -c $< -g
 
 clean:
-	rm *.a *.o
+	rm *.a $(OBJ)
 
 deploy:
 	sudo cp $(LIB) /usr/lib/
