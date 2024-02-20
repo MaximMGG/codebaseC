@@ -29,8 +29,10 @@ str *newstr(char *s);
 str *newstr_val(str *d, char *value);
 //concatinate two string and return string d
 str *str_concat(str *d, str *s);
-//formatting string with fmt format
-// str *str_format(str *d, str *fmt, ...);
+/*formatting string with fmt format
+* for now only working with patterns like %d, %c, %f, %lf, %ld, %s, %x
+*/
+str *str_format(str *d, str *fmt, ...);
 //return List split by symbol
 List *str_split(str *d, char symbol);
 //return STR_ERR messag
