@@ -2,6 +2,7 @@
 #define _M_STRING_
 // #include <string.h>
 // #include <stdlib.h>
+#include <util/m_list.h>
 
 typedef struct{
     char *str;
@@ -21,13 +22,17 @@ extern STR_ERR STR_ERROR;
 //                     s->len = strlen(a); s->str = (char *) malloc(s->len);       \
 //                     strcpy(s->str, a);
 
-str *str_new_val(str *d, char *value);
+//create new string, allocated memory 
+str *newstr(char *s);
+//do not create new string, just free d->str, and copy value to new allocated
+//d->str
+str *newstr_val(str *d, char *value);
 //concatinate two string and return string d
 str *str_concat(str *d, str *s);
 //formatting string with fmt format
-str *str_format(str *d, str *fmt, ...);
-//return str arr split by symbol
-str **str_split(str *d, char symbol, int *count);
+// str *str_format(str *d, str *fmt, ...);
+//return List split by symbol
+List *str_split(str *d, char symbol);
 //return STR_ERR messag
 str *str_err();
 //return copy of str
@@ -39,7 +44,7 @@ str *str_remove_all(str *d, char symbol);
 //if pattern "qu" -> return 0
 char str_starts_with(str *d, char *pattern);
 //free memory
-void str_free(str *s);
+void str_free(str *__restrict s);
 
 
 #endif //_M_STRING_
