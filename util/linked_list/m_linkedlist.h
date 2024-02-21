@@ -29,16 +29,16 @@ typedef struct {
     LinkedList *llist;
 }Literator;
 
-LinkedList *LList_create();
+LinkedList *LList_create(Type type);
 //append value in teil of LinkedList, if type == L_STRUCT need to set @param size, size of
 //struct in bytes
-LLIST_CODE LList_append_next(LinkedList *llist, void *data, u32 size, Type type);
+LLIST_CODE LList_append_next(LinkedList *llist, void *data, u32 size);
 //append value in head of LinkedList, if type == L_STRUCT need to set @param
 //size, size of struct in bytes
-LLIST_CODE LLIst_append_next(LinkedList *llist, void *data, u32 size, Type type);
+LLIST_CODE LLIst_append_next(LinkedList *llist, void *data, u32 size);
 //append value in spesial position (@param pos) in LinkedList,
 //if type == L_STRUCT need tot set @param size, size of struct in bytes
-LLIST_CODE LList_append_pos(LinkedList *llist, void *data, u32 size, Type type, u32 pos);
+LLIST_CODE LList_append_pos(LinkedList *llist, void *data, u32 size, u32 pos);
 //remove item (@param data) from LinkedList, if data == NULL, remove data from
 //LinkedList by Literator *p;
 LLIST_CODE LList_remove(LinkedList *llist, Literator *p);
@@ -51,6 +51,6 @@ void LList_iterator_next(Literator *p);
 //return pointer on previous element in LinkedList
 void Llist_iterator_prev(Literator *p);
 //frees all memory allocated for LinkedList
-LLIST_CODE LList_destroy_list(LinkedList *llist, Type type, void (*struct_free)(pointer));
+LLIST_CODE LList_destroy_list(LinkedList *llist, void (*struct_free)(pointer));
 
 #endif //_M_LINKED_LIST_H_

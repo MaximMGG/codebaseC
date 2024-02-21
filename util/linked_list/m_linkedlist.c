@@ -37,13 +37,13 @@ static LLIST_CODE LList_append(LinkedList *llist, void *data, u32 size, u32 pos)
     return LLIST_OK;
 }
 
-static LLIST_CODE LList_append_helper(LinkedList *llist, void *data, u32 size, Type type, u32 pos) {
-    switch(type) {
+static LLIST_CODE LList_append_helper(LinkedList *llist, void *data, u32 size, u32 pos) {
+    switch(llist->type) {
         case L_CHAR:
         case L_SHORT:
         case L_INT:
         case L_LONG: {
-            if (LList_append(llist, data, type, pos) == LLIST_OK) {
+            if (LList_append(llist, data, llist->type, pos) == LLIST_OK) {
                 return LLIST_OK;
             } else {
                 return LLIST_ERROR;
@@ -68,15 +68,15 @@ static LLIST_CODE LList_append_helper(LinkedList *llist, void *data, u32 size, T
 
 }
 
-LLIST_CODE LList_append_next(LinkedList *llist, void *data, u32 size, Type type) {
-    if (LList_append_helper(llist, data, size, type, -1) == LLIST_OK) {
+LLIST_CODE LList_append_next(LinkedList *llist, void *data, u32 size) {
+    if (LList_append_helper(llist, data, size, -1) == LLIST_OK) {
         return LLIST_OK;
     } else {
         return LLIST_ERROR;
     }
 }
-LLIST_CODE LLIst_append_prev(LinkedList *llist, void *data, u32 size, Type type) {
-    if (LList_append_helper(llist, data, size, type, 0) == LLIST_OK) {
+LLIST_CODE LLIst_append_prev(LinkedList *llist, void *data, u32 size) {
+    if (LList_append_helper(llist, data, size, 0) == LLIST_OK) {
         return LLIST_OK;
     } else {
         return LLIST_ERROR;
@@ -84,8 +84,8 @@ LLIST_CODE LLIst_append_prev(LinkedList *llist, void *data, u32 size, Type type)
 
     return LLIST_OK;
 }
-LLIST_CODE LList_append_pos(LinkedList *llist, void *data, u32 size, Type type, u32 pos) {
-    if (LList_append_helper(llist, data, size, type, pos) == LLIST_OK) {
+LLIST_CODE LList_append_pos(LinkedList *llist, void *data, u32 size, u32 pos) {
+    if (LList_append_helper(llist, data, size, pos) == LLIST_OK) {
         return LLIST_OK;
     } else {
         return LLIST_ERROR;
@@ -150,14 +150,14 @@ void Llist_iterator_prev(Literator *p) {
     }
 }
 
-LLIST_CODE LList_destroy_list(LinkedList *llist, Type type, void (*struct_free)(pointer)) {
+LLIST_CODE LList_destroy_list(LinkedList *llist, void (*struct_free)(pointer)) {
     Ldata *ldata = llist->head;
 
     while(ldata != NULL) {
         Ldata *temp = ldata;
         ldata = ldata->next;
 
-        if (type == L_STRUCT) {
+        if (llist->type == L_STRUCT) {
             struct_free(temp->data);
         } else {
             free(temp->data);
