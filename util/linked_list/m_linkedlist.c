@@ -3,41 +3,68 @@
 #include <stdlib.h>
 #include <string.h>
 
-LinkedList *LList_create() {
+LinkedList *LList_create(Type type) {
     LinkedList *llist = (LinkedList *) malloc(sizeof(LinkedList));
     llist->size = 0;
     llist->head = NULL;
     llist->tail = NULL;
+    llist->type = type;
     return llist;
 }
 
-static LLIST_CODE LList_append(LinkedList *llist, void *data, u32 size, u32 pos) {
+static LLIST_CODE LList_append(LinkedList *llist, void *data, u32 size, i32 pos) {
     Ldata *ldata = (Ldata *) malloc(sizeof(Ldata));
     ldata->data = (pointer) malloc(size);
     memcpy(ldata->data, data, size);
     switch (pos) {
         case 0: {
-            ldata->next = llist->head;
-            ldata->prev = NULL;
-            llist->head = ldata;
-        } case -1: {
-            ldata->next = NULL;
-            ldata->prev = llist->tail;
-            llist->tail = ldata;
-        } default: {
+            if (llist->size == 0) {
+                llist->head = ldata;
+                llist->head->next = ldata;
+                llist->tail = ldata;
+                llist->tail->prev = ldata;
+            } else {
+                ldata->next = llist->head;
+                ldata->prev = NULL;
+                llist->head = ldata;
+            }
+        } break; 
+        case -1: {
+            if (llist->size == 0) {
+                llist->head = ldata;
+                llist->head->next = ldata;
+                llist->tail = ldata;
+                llist->tail->prev = ldata;
+            } else {
+                ldata->next = NULL;
+                ldata->prev = llist->tail;
+                ldata->prev->next = ldata;
+                llist->tail = ldata;
+            }
+        } break;
+        default: {
             Ldata *p = llist->head;
             for(int i = 0; i < pos; i++) {
                 p = p->next;
             } 
+            if (p == NULL) {
+                llist->head = ldata;
+                llist->head->next = ldata;
+                llist->tail = ldata;
+                llist->tail->prev = ldata;
+            } else {
+
+            }
             ldata->prev = p->prev;
             ldata->next = p;
             p->prev = ldata;
         }
     } 
+    llist->size++;
     return LLIST_OK;
 }
 
-static LLIST_CODE LList_append_helper(LinkedList *llist, void *data, u32 size, u32 pos) {
+static LLIST_CODE LList_append_helper(LinkedList *llist, void *data, u32 size, i32 pos) {
     switch(llist->type) {
         case L_CHAR:
         case L_SHORT:
@@ -75,7 +102,7 @@ LLIST_CODE LList_append_next(LinkedList *llist, void *data, u32 size) {
         return LLIST_ERROR;
     }
 }
-LLIST_CODE LLIst_append_prev(LinkedList *llist, void *data, u32 size) {
+LLIST_CODE LList_append_prev(LinkedList *llist, void *data, u32 size) {
     if (LList_append_helper(llist, data, size, 0) == LLIST_OK) {
         return LLIST_OK;
     } else {
@@ -103,6 +130,7 @@ LLIST_CODE LList_remove(LinkedList *llist, Literator *p) {
 
     free(ldata->data);
     free(ldata);
+    llist->size--;
 
     return LLIST_OK;
 }
@@ -122,6 +150,7 @@ LLIST_CODE LList_remove_pos(LinkedList *llist, u32 pos) {
 
     free(ldata->data);
     free(ldata);
+    llist->size--;
 
     return LLIST_OK;
 }
@@ -150,6 +179,12 @@ void Llist_iterator_prev(Literator *p) {
     }
 }
 
+LLIST_CODE LList_iterator_free(Literator *p) {
+    free(p);
+    p = NULL;
+    return LLIST_OK;
+}
+
 LLIST_CODE LList_destroy_list(LinkedList *llist, void (*struct_free)(pointer)) {
     Ldata *ldata = llist->head;
 
@@ -166,7 +201,12 @@ LLIST_CODE LList_destroy_list(LinkedList *llist, void (*struct_free)(pointer)) {
         temp->next = NULL;
         temp->prev = NULL;
         free(temp);
+        temp = NULL;
     }
+
+    free(llist);
+    llist->size = 0;
+    llist = NULL;
 
     return LLIST_OK;
 }

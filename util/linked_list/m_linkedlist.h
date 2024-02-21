@@ -1,6 +1,6 @@
 #ifndef _M_LINKED_LIST_H_
 #define _M_LINKED_LIST_H_
-#include "../util.h"
+#include <util/util.h>
 
 typedef enum {
     L_CHAR = 1, L_SHORT = 2, L_INT = 4, L_LONG = 8, L_FLOAT = 4, L_DOUBLE = 8, L_STRING, L_STRUCT
@@ -32,10 +32,10 @@ typedef struct {
 LinkedList *LList_create(Type type);
 //append value in teil of LinkedList, if type == L_STRUCT need to set @param size, size of
 //struct in bytes
-LLIST_CODE LList_append_next(LinkedList *llist, void *data, u32 size);
+LLIST_CODE LList_append_prev(LinkedList *llist, void *data, u32 size);
 //append value in head of LinkedList, if type == L_STRUCT need to set @param
 //size, size of struct in bytes
-LLIST_CODE LLIst_append_next(LinkedList *llist, void *data, u32 size);
+LLIST_CODE LList_append_next(LinkedList *llist, void *data, u32 size);
 //append value in spesial position (@param pos) in LinkedList,
 //if type == L_STRUCT need tot set @param size, size of struct in bytes
 LLIST_CODE LList_append_pos(LinkedList *llist, void *data, u32 size, u32 pos);
@@ -46,6 +46,8 @@ LLIST_CODE LList_remove(LinkedList *llist, Literator *p);
 LLIST_CODE LList_remove_pos(LinkedList *llist, u32 pos);
 //return Literator (void *) on first element in LinkedList 
 Literator *LList_get_iterator(LinkedList *llist);
+//iterator free
+LLIST_CODE LList_iterator_free(Literator *p);
 //return pointer on next element in LinkedList
 void LList_iterator_next(Literator *p);
 //return pointer on previous element in LinkedList
