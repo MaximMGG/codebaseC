@@ -10,10 +10,10 @@ typedef enum {
     LLIST_OK, LLIST_ERROR
 } LLIST_CODE;
 
-typedef struct {
+typedef struct ldata {
     pointer data;
-    pointer prev;
-    pointer next;
+    struct ldata *prev;
+    struct ldata *next;
 }Ldata;
 
 typedef struct {
@@ -24,7 +24,8 @@ typedef struct {
 } LinkedList;
 
 typedef struct {
-    pointer p;
+    pointer data;
+    Ldata *llist_data;
     LinkedList *llist;
 }Literator;
 
@@ -40,9 +41,11 @@ LLIST_CODE LLIst_append_next(LinkedList *llist, void *data, u32 size, Type type)
 LLIST_CODE LList_append_pos(LinkedList *llist, void *data, u32 size, Type type, u32 pos);
 //remove item (@param data) from LinkedList, if data == NULL, remove data from
 //LinkedList by Literator *p;
-LLIST_CODE LList_remove(LinkedList *llist, void *data, Literator *p);
-//return pointer (void *) on first element in LinkedList
-pointer LList_get_iterator(LinkedList *llist);
+LLIST_CODE LList_remove(LinkedList *llist, Literator *p);
+//remove item from LinkedList by @param pos
+LLIST_CODE LList_remove_pos(LinkedList *llist, u32 pos);
+//return Literator (void *) on first element in LinkedList 
+Literator *LList_get_iterator(LinkedList *llist);
 //return pointer on next element in LinkedList
 void LList_iterator_next(Literator *p);
 //return pointer on previous element in LinkedList

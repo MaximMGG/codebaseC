@@ -17,12 +17,12 @@ static LLIST_CODE LList_append(LinkedList *llist, void *data, u32 size, u32 pos)
     memcpy(ldata->data, data, size);
     switch (pos) {
         case 0: {
-            ldata->next = llist->head->data;
+            ldata->next = llist->head;
             ldata->prev = NULL;
             llist->head = ldata;
         } case -1: {
             ldata->next = NULL;
-            ldata->prev = llist->tail->data;
+            ldata->prev = llist->tail;
             llist->tail = ldata;
         } default: {
             Ldata *p = llist->head;
@@ -30,8 +30,8 @@ static LLIST_CODE LList_append(LinkedList *llist, void *data, u32 size, u32 pos)
                 p = p->next;
             } 
             ldata->prev = p->prev;
-            ldata->next = p->data;
-            p->prev = ldata->data;
+            ldata->next = p;
+            p->prev = ldata;
         }
     } 
     return LLIST_OK;
@@ -91,23 +91,82 @@ LLIST_CODE LList_append_pos(LinkedList *llist, void *data, u32 size, Type type, 
         return LLIST_ERROR;
     }
 }
-LLIST_CODE LList_remove(LinkedList *llist, void *data, Literator *p) {
+LLIST_CODE LList_remove(LinkedList *llist, Literator *p) {
     Ldata *ldata = llist->head;
-    Ldata *temp;
     for(int i = 0; i < llist->size; i++) {
-        if (data != NULL) {
-            if (ldata->data == data) {
-                temp = ldata;
-                ldata->prev = 
-            }
+        if (ldata->data == p->data) {
+            ldata->prev->next = ldata->next;
+            ldata->next->prev = ldata->prev;
+            break;
         }
     }
-    
 
+    free(ldata->data);
+    free(ldata);
 
     return LLIST_OK;
 }
-pointer LList_get_iterator(LinkedList *llist);
-void LList_iterator_next(Literator *p);
-void Llist_iterator_prev(Literator *p);
-LLIST_CODE LList_destroy_list(LinkedList *llist, Type type, void (*struct_free)(pointer));
+
+LLIST_CODE LList_remove_pos(LinkedList *llist, u32 pos) {
+    Ldata *ldata = llist->head;
+
+    for(int i = 0; i < pos; i++) {
+        ldata = ldata->next;
+        if (ldata == NULL) {
+            return LLIST_ERROR;
+        }
+    } 
+    
+    ldata->prev->next = ldata->next;
+    ldata->next->prev = ldata->prev;
+
+    free(ldata->data);
+    free(ldata);
+
+    return LLIST_OK;
+}
+
+Literator *LList_get_iterator(LinkedList *llist) {
+    Literator *it = (Literator *) malloc(sizeof(Literator));
+
+    it->data = llist->head->data;
+    it->llist_data = llist->head;
+    it->llist = llist;
+
+    return it;
+}
+
+void LList_iterator_next(Literator *p) {
+    if (p->llist_data->next != NULL) {
+        p->llist_data = p->llist_data->next;
+        p->data = p->llist_data->data;
+    }
+}
+
+void Llist_iterator_prev(Literator *p) {
+    if (p->llist_data->prev != NULL) {
+        p->llist_data = p->llist_data->prev;
+        p->data = p->llist_data->data;
+    }
+}
+
+LLIST_CODE LList_destroy_list(LinkedList *llist, Type type, void (*struct_free)(pointer)) {
+    Ldata *ldata = llist->head;
+
+    while(ldata != NULL) {
+        Ldata *temp = ldata;
+        ldata = ldata->next;
+
+        if (type == L_STRUCT) {
+            struct_free(temp->data);
+        } else {
+            free(temp->data);
+        }
+
+        temp->next = NULL;
+        temp->prev = NULL;
+        free(temp);
+    }
+
+    return LLIST_OK;
+}
