@@ -208,3 +208,10 @@ str *str_format(str *d, str *fmt, ...) {
     return d;
 }
 
+char str_end_with(str *d, char *pattern) {
+    int iter = strlen(pattern) - 1;
+    for(int i = iter, j = d->len - 1; i > 0; i--, j--) {
+        if (d->str[j] != pattern[i]) return 0;
+    }
+    return 1;
+}
