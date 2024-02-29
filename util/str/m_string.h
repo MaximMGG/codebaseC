@@ -45,11 +45,12 @@ str *str_remove_all(str *d, char symbol);
 //f.e. str *d = "hello", if pattern "he" -> return 1, 
 //if pattern "qu" -> return 0
 char str_starts_with(str *d, char *pattern);
-
 // return 1 if string d ends with "pattern"
 // f.e. str *d = "Hello", if pattern "llo" return 1
 // if "le" return 0;
 char str_end_with(str *d, char *pattern);
+//append to str new value
+str *str_append(str *d, char *value);
 //free memory
 void str_free(str *__restrict s);
 

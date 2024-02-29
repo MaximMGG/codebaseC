@@ -215,3 +215,11 @@ char str_end_with(str *d, char *pattern) {
     }
     return 1;
 }
+
+str *str_append(str *d, char *value) {
+    int vlen = strlen(value);
+    d->str = (char *) realloc(d->str, sizeof(char) * (d->len + vlen + 1));
+    strcpy(&d->str[d->len], value);
+    d->len += vlen;
+    return d;
+}
