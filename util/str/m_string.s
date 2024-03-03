@@ -13,8 +13,8 @@ section .bss
     temp_str        resq    1
 
 section .text
-    global  str_concat
-str_concat:
+    global  str_concat_a
+str_concat_a:
 push    rbp
 mov     rbp, rsp
 
@@ -34,13 +34,13 @@ mov     rbp, rsp
         mov     r13, [temp_str]
     .first_loop:
         cmp     rcx, 0
-        je      first_loop_exit
-        mov     rax, byte [r11]
+        je      .first_loop_exit
+        mov     rax, [r11]
         mov     byte [r13], al
         inc     r11
         inc     r13
         dec     rcx
-        jmp     first_loop
+        jmp     .first_loop
     .first_loop_exit:
         mov     rax, [rbp - 16]
         mov     r11, [rax]
@@ -48,22 +48,23 @@ mov     rbp, rsp
 
     .second_loop:
         cmp     rcx, 0
-        je      second_loop_end
-        mov     rax, byte [r11]
+        je      .second_loop_end
+        mov     rax, [r11]
         mov     byte [r13], al
         inc     r11
         inc     r13
         dec     rcx
-        jmp     second_loop
-
+        jmp     .second_loop
     .second_loop_end:
+        mov     rdi, [temp_str]
+        call    strlen
+        mov     [mal_len], rax
 
-
-
-
-
-
-
+        mov     rax, 1
+        mov     rdi, 1
+        mov     rsi, [temp_str]
+        mov     rdx, [mal_len]
+        syscall
 leave
 ret
 
