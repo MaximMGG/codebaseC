@@ -22,8 +22,10 @@ extern STR_ERR STR_ERROR;
 //                     s->len = strlen(a); s->str = (char *) malloc(s->len);       \
 //                     strcpy(s->str, a);
 
-//create new string, allocated memory 
+//create new string, return pointer on str (str *) allocated memory in the heap
 str *newstr(char *s);
+//create new string, return local str, for s->str allocated memory in the head
+str newstr_l(char *s);
 //do not create new string, just free d->str, and copy value to new allocated
 //d->str
 str *newstr_val(str *d, char *value);
@@ -53,6 +55,8 @@ char str_end_with(str *d, char *pattern);
 str *str_append(str *d, char *value);
 //free memory
 void str_free(str *__restrict s);
+//free memory of s->str s should be local;
+void str_free_l(str *__restrict s);
 
 
 #endif //_M_STRING_

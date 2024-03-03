@@ -10,7 +10,6 @@ STR_ERR STR_ERROR;
                     for (int i = 0; ; c = *(s->str + i), i++)                \
 
 
-
 enum errors{
     CONCAT_ERR,
     MEM_ALLOC_ERR
@@ -24,6 +23,13 @@ str *newstr(char *s) {
     new->str = (char *) malloc(sizeof(char) * new->len + 1);
     strcpy(new->str, s);
 
+    return new;
+}
+
+str newstr_l(char *s) {
+    str new = {.len = strlen(s)};
+    new.str = (char *) malloc(sizeof(char) * new.len + 1);
+    strcpy(new.str, s);
     return new;
 }
 
@@ -222,4 +228,12 @@ str *str_append(str *d, char *value) {
     strcpy(&d->str[d->len], value);
     d->len += vlen;
     return d;
+}
+
+void str_free_l(str *__restrict s) {
+    if (s->str != NULL) {
+        free(s->str);
+        s->str = NULL;
+    }
+    s->len = 0;
 }
