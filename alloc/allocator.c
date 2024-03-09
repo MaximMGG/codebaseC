@@ -1,7 +1,7 @@
 #include "allocator.h"
 #include <stdio.h>
 
-
+#define DEF_CHUNK_INFO_SIZE 10
 
 static int allocator_error = 0;
 #define byte char
@@ -29,6 +29,40 @@ static unsigned int allocator_strlen(char *str) {
     unsigned int i = 0;
     for( ; str[i] != '\0'; i++);
     return i;    
+}
+
+static void allocator_add_chunk_info(allocator *aloc, void *point, unsigned int size) {
+    byte added = false;
+    for(int i = 0; i < aloc->chi_size; i++) {
+        if (aloc->chi[i] == NULL) {
+            aloc->chi[i] = (_chunk_info *) malloc(sizeof(_chunk_info));
+            aloc->chi[i]->pointer = point;
+            aloc->chi[i]->size = size;
+            added = true;
+            return;
+        }
+    }
+    if (added == false) {
+        aloc->chi_size <<= 1;
+        aloc->chi = (_chunk_info **) realloc(aloc->chi, sizeof(_chunk_info *) * aloc->chi_size);
+        aloc->chi[aloc->chi_size / 2] = (_chunk_info *) malloc(sizeof(_chunk_info));
+        aloc->chi[aloc->chi_size / 2]->pointer = point;
+        aloc->chi[aloc->chi_size / 2]->size = size;
+    }
+}
+
+static unsigned int allocator_free_chunk_info(allocator *aloc, void *point) {
+    unsigned int p_size = {};
+    for(int i = 0; i < aloc->chi_size; i++) {
+        if (aloc->chi[i] == point) {
+            p_size = aloc->chi[i]->size;
+            aloc->chi[i]->pointer = NULL;
+            aloc->chi[i]->size = 0;
+            free(aloc->chi[i]);
+            aloc->chi[i] = NULL;
+        }
+    }
+    return p_size;
 }
 
 _Noreturn void allocator_error_print() {
@@ -62,6 +96,13 @@ allocator *allocator_alloc(size_t size) {
     }
     a->size = size;
     a->mem_left = size;
+    a->chi_size = DEF_CHUNK_INFO_SIZE;
+    a->chi = (_chunk_info **) malloc(sizeof(_chunk_info *) * a->chi_size);
+
+    for(int i = 0; i < a->chi_size; i++) {
+        a->chi[i] = NULL;
+    }
+
     allocator_mem_set(a->cur_pointer, 0xdc, size);
     return a;
 }
@@ -107,6 +148,7 @@ void *al_get_mem(allocator *al, size_t size) {
         allocator_error = ALLOCATOR_NOT_FULLSIZE_CHUNK;
         return null;
     }
+    allocator_add_chunk_info(al, p, size);
     al->mem_left -= size;
     allocator_mem_set(p, 0, size);
     return p;
@@ -128,6 +170,11 @@ void *al_get_strmem(allocator *al, char *str) {
         return null;
     }
     void *p = al_get_chunk(al, size + 1);
+    if (p == null) {
+        allocator_error = ALLOCATOR_NOT_FULLSIZE_CHUNK;
+        return null;
+    }
+    allocator_add_chunk_info(al, p, size);
     al->mem_left -= size + 1;
     allocator_mem_cpy(p, str, size);
     char *sp = p;
@@ -144,9 +191,10 @@ static bool is_memory_in_allocator(allocator *al, void *p){
 }
 
 //0xdc
-ALLOCATOR_ERROR al_free(allocator* al, void *p, size_t size) {
+ALLOCATOR_ERROR al_free(allocator* al, void *p) {
     mtx_lock(&al->allocator_mutex);
     if (is_memory_in_allocator(al, p)) {
+        unsigned int size = allocator_free_chunk_info(al, p);
         allocator_mem_set(p, 0xdc, size);
         p = null;
         al->mem_left += size;

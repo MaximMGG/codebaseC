@@ -28,14 +28,15 @@ int main() {
     for (int i = 0; i < 16; i++) {
         darr[i] = (double) i;
     }
-    al_free(a, arr, 40);
-    struct app *aap = al_get_mem(a, sizeof(struct app));
-
-    if (aap == null) printf("%s\n", al_get_error());
-    aap->a = name;
-    aap->b = 123;
-    aap->c = 123123123123;
-    aap->name = al_get_strmem(a, "Paul");
+    al_free(a, arr);
+    printf("Done\n");
+    // struct app *aap = al_get_mem(a, sizeof(struct app));
+    //
+    // if (aap == null) printf("%s\n", al_get_error());
+    // aap->a = name;
+    // aap->b = 123;
+    // aap->c = 123123123123;
+    // aap->name = al_get_strmem(a, "Paul");
     al_dealloc(a);
 
     return 0;
