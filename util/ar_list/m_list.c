@@ -2,18 +2,53 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #define LIST_ERROR(msg) fprintf(stderr, "%s\n", msg)
 #define LIST_DEF_SIZE 20
 
 
-List *list_create(unsigned int size, int type_size) {
+List *list_create(unsigned int size, l_type type) {
     List *new = (List *) malloc(sizeof(List));
-    if (type_size == 0) {
-        LIST_ERROR("type_size if 0");
-        return NULL;
+
+    switch (type) {
+        case l_char:
+            new->type_size = 1;
+            new->type = l_char;
+            break;
+        case l_short:
+            new->type_size = 2;
+            new->type = l_short;
+            break;
+        case l_int:
+            new->type_size = 4;
+            new->type = l_int;
+            break;
+        case l_float:
+            new->type_size = 4;
+            new->type = l_float;
+            break;
+        case l_long:
+            new->type_size = 8;
+            new->type = l_long;
+            break;
+        case l_double:
+            new->type_size = 8;
+            new->type = l_double;
+        case l_longdouble: 
+            new->type_size = 16;
+            new->type = l_longdouble;
+            break;
+        case l_string:
+            new->type_size = 8;
+            new->type = l_string;
+            break;
+        case l_struct:
+            new->type_size = -1;
+            new->type = l_struct;
+            break;
     }
-    new->type_size = type_size;
+
     new->concurrent = false;
     new->max_len = LIST_DEF_SIZE;
     new->list = (void **) malloc(sizeof(void *) * new->max_len);
@@ -32,8 +67,12 @@ static boolean list_string_start_with(const char *source, const char *pattern, i
 }
 
 
-List *list_create_from_string(const char *source, int type_size, const char *diliver) {
-    List *new = list_create(0, type_size);
+List *list_create_from_string(const char *source, l_type type, const char *diliver) {
+    if (type == l_struct) {
+        LIST_ERROR("Can't create list from string with type struct");
+        return NULL;
+    }
+    List *new = list_create(0, type);
     int s_len = strlen(source);
     int d_len = strlen(diliver);
     char buf[256];
@@ -50,13 +89,56 @@ List *list_create_from_string(const char *source, int type_size, const char *dil
         buf[j] = source[i];
     }
     buf[++j] = '\0';
-    list_add(new, buf);
+
+    switch (type) {
+        case l_char: {
+            char temp = (char) atoi(buf);
+            list_add(new, &temp);
+            break;
+        }
+        case l_short: {
+            short temp = (short) atoi(buf);
+            list_add(new, &temp);
+            break;
+        }
+        case l_int: {
+            int temp = (int) atoi(buf);
+            list_add(new, &temp);
+            break;
+        }
+        case l_float : {
+            float temp = (float) atof(buf);
+            list_add(new, &temp);
+            break;
+        }
+        case l_long: {
+            long temp = (long) atol(buf);
+            list_add(new, &temp);
+            break;
+        }
+        case l_double: {
+            double temp = (double) atof(buf);
+            list_add(new, &temp);
+            break;
+        }
+        case l_longdouble: {
+            long double temp = (long double) atof(buf);
+            list_add(new, &temp);
+            break;
+        }
+        case l_string: {
+            list_add(new, buf);
+            break;
+        }
+        case l_struct:
+            break;
+    }
 
     return new;
 }
 
-List *list_create_from_array(void **source, int type_size, int size) {
-    List *new = list_create(0, type_size);
+List *list_create_from_array(void **source, l_type type, int size) {
+    List *new = list_create(0, type);
 
     for(int i = 0; i < size; i++) {
         list_add(new, source[i]);
@@ -76,8 +158,19 @@ List *list_add(List *list, void *value) {
         LIST_ERROR("list_add error, value == NULL");
         return list;
     }
-    list->list[list->len] = (void *) malloc(list->type_size);
-    memcpy(list->list[list->len++], value, list->type_size);
+
+    if (list->type == l_string) {
+        list->list[list->len] = (void *) malloc(sizeof(char) * strlen((char *) value));
+        strcpy(list->list[list->len], (char *) value);
+    } else {
+        list->list[list->len] = (void *) malloc(list->type_size);
+        memcpy(list->list[list->len++], value, list->type_size);
+    }
+
+    if (list->type_size == -1) {
+        LIST_ERROR("You need to set struct size before adding structs in list");
+        return list;
+    }
 
     if (list->len == list->max_len) {
         list->max_len <<= 1;
@@ -94,9 +187,23 @@ List *list_add_list(List *source, List *temp) {
     return source;
 }
 
+int list_contain_string(List *list, const char *value) {
+    for(int i = 0; i < list->len; i++) {
+        char *temp = (char *) list->list[i];
+        if (strcmp(temp, value) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 int list_contain(List *list, void *value) {
     boolean contain = true;
     char *vp = (char *) value;
+
+    if (list->type == l_string) {
+        return list_contain_string(list, value);
+    }
 
     for(int i = 0; i < list->len; i++) {
         char *p = (char *) list->list[i];
@@ -158,5 +265,4 @@ void list_free_all(List *list) {
     free(list);
     list = NULL;
 }
-
 
