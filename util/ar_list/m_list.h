@@ -15,7 +15,7 @@ typedef enum{
     l_float, 
     l_double, 
     l_longdouble = 16, 
-    l_string = 0, 
+    l_string = 14, 
     l_struct = -1
 } l_type;
 

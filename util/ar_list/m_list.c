@@ -8,7 +8,7 @@
 #define LIST_DEF_SIZE 20
 
 
-List *list_create(unsigned int size, l_type type) {
+List *list_create(unsigned int size, int type) {
     List *new = (List *) malloc(sizeof(List));
 
     switch (type) {
@@ -40,7 +40,7 @@ List *list_create(unsigned int size, l_type type) {
             new->type = l_longdouble;
             break;
         case l_string:
-            new->type_size = 8;
+            new->type_size = 0;
             new->type = l_string;
             break;
         case l_struct:
