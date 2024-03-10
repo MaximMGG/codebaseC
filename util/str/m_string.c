@@ -70,7 +70,7 @@ str *str_concat(str *d, str *s) {
 
 
 List *str_split(str *d, char symbol) {
-    List *list = list_create(0, M_STRING);
+    List *list = list_create(0, l_string);
     char buf[200];
     int j = 0;
 

@@ -66,6 +66,51 @@ static boolean list_string_start_with(const char *source, const char *pattern, i
     return true;
 }
 
+void generic_add_from_string(List *new, char *buf) {
+            switch (new->type) {
+                case l_char: {
+                        char temp = (char) atoi(buf);
+                        list_add(new, &temp);
+                        break;
+                }
+                case l_short: {
+                        short temp = (short) atoi(buf);
+                        list_add(new, &temp);
+                        break;
+                }
+                case l_int: {
+                        int temp = (int) atoi(buf);
+                        list_add(new, &temp);
+                        break;
+                }
+                case l_float : {
+                        float temp = (float) atof(buf);
+                        list_add(new, &temp);
+                        break;
+                }
+                case l_long: {
+                        long temp = (long) atol(buf);
+                        list_add(new, &temp);
+                        break;
+                }
+                case l_double: {
+                        double temp = (double) atof(buf);
+                        list_add(new, &temp);
+                        break;
+                }
+                case l_longdouble: {
+                        long double temp = (long double) atof(buf);
+                        list_add(new, &temp);
+                        break;
+                }
+                case l_string: {
+                        list_add(new, buf);
+                        break;
+                }
+                case l_struct:
+                        break;
+            }
+}
 
 List *list_create_from_string(const char *source, l_type type, const char *diliver) {
     if (type == l_struct) {
@@ -81,58 +126,15 @@ List *list_create_from_string(const char *source, l_type type, const char *diliv
     for(int i = 0; i < s_len; i++, j++) {
         if (list_string_start_with(&source[i], diliver, d_len)) {
             buf[j] = '\0';
-            list_add(new, buf);
+            generic_add_from_string(new, buf);
             j = -1;
-            i += d_len;
+            i += d_len - 1;
             continue;
         }
         buf[j] = source[i];
     }
-    buf[++j] = '\0';
-
-    switch (type) {
-        case l_char: {
-            char temp = (char) atoi(buf);
-            list_add(new, &temp);
-            break;
-        }
-        case l_short: {
-            short temp = (short) atoi(buf);
-            list_add(new, &temp);
-            break;
-        }
-        case l_int: {
-            int temp = (int) atoi(buf);
-            list_add(new, &temp);
-            break;
-        }
-        case l_float : {
-            float temp = (float) atof(buf);
-            list_add(new, &temp);
-            break;
-        }
-        case l_long: {
-            long temp = (long) atol(buf);
-            list_add(new, &temp);
-            break;
-        }
-        case l_double: {
-            double temp = (double) atof(buf);
-            list_add(new, &temp);
-            break;
-        }
-        case l_longdouble: {
-            long double temp = (long double) atof(buf);
-            list_add(new, &temp);
-            break;
-        }
-        case l_string: {
-            list_add(new, buf);
-            break;
-        }
-        case l_struct:
-            break;
-    }
+    buf[j] = '\0';
+    generic_add_from_string(new, buf);
 
     return new;
 }
@@ -164,8 +166,9 @@ List *list_add(List *list, void *value) {
         strcpy(list->list[list->len], (char *) value);
     } else {
         list->list[list->len] = (void *) malloc(list->type_size);
-        memcpy(list->list[list->len++], value, list->type_size);
+        memcpy(list->list[list->len], value, list->type_size);
     }
+    list->len++;
 
     if (list->type_size == -1) {
         LIST_ERROR("You need to set struct size before adding structs in list");
