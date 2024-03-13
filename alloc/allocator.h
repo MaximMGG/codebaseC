@@ -1,17 +1,18 @@
 #ifndef ALLOCATOR_H_
 #define ALLOCATOR_H_
 
+typedef char byte;
+
 typedef struct {
-    void **data_chunk;
+    byte *data_chunk;
     unsigned int chunk_size;
     unsigned int free_chunk_size;
 
-    struct _pointers {
+    struct {
         void *p_t;
         int *p_size;
-    };
+    }_pointers;
 }Allocator;
-
 /*
  * create Allocator
  * @return Allocator *
