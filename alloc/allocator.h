@@ -7,11 +7,6 @@ typedef struct {
     byte *data_chunk;
     unsigned int chunk_size;
     unsigned int free_chunk_size;
-
-    struct {
-        void *p_t;
-        int *p_size;
-    }_pointers;
 }Allocator;
 /*
  * create Allocator
