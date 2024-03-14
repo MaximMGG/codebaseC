@@ -32,7 +32,7 @@ static int Allocator_check_free_chunk(Allocator *al, unsigned int size) {
     int free_chunk = 0;
     byte *chunk_pointer = al->data_chunk;
     for(int i = 0; i < real_chunk_size; i++) {
-        if (*(chunk_pointer) != DEF_BYTE_VAL) {
+        if (*(chunk_pointer) != (char) DEF_BYTE_VAL) {
             free_chunk = 0;
         } else {
             free_chunk++;
