@@ -19,11 +19,11 @@ Allocator *Allocator_create(unsigned int chunk_size);
  * @return void *
  * @param size (sizeo of allocated memeory)
  */
-void *Allocator_get_memory(unsigned int size);
+void *Allocator_get_memory(Allocator *al, unsigned int size);
 /*
  * frees allocated memory in chunk
  */
-void Allocator_free_memory();
+void Allocator_free_memory(Allocator *al, void *mem);
 /*
  * return error message
  * @return const char *
@@ -32,7 +32,6 @@ const char *Allocator_get_error();
 /*
  * frees all memory in Allocator
  */
-void Allocator_destroy();
+void Allocator_destroy(Allocator *al);
 
 #endif 
-
