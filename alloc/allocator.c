@@ -65,7 +65,27 @@ void *Allocator_get_memory(Allocator *al, unsigned int size) {
     for(int i = 0; i < size; i++) {
         *(al->data_chunk + chunk_pointer + i) = 0;
     }
+    al->free_chunk_size -= size;
     return (void *)(al->data_chunk + chunk_pointer);
 }
 
+void Allocator_free_memory(Allocator *al, void *mem) {
+    unsigned int *chunk_info = (unsigned int *) (mem - POINTER_SIZE_INFO);
+    byte *chunk = (byte *) mem;
+
+    for(int i = 0; i < *chunk_info; i++) {
+        *(chunk++) = 0;
+    }
+    al->free_chunk_size += *chunk_info;
+    *chunk_info = 0;
+}
+
+void Allocator_destroy(Allocator *al) {
+    free(al->data_chunk);
+    al->data_chunk = NULL;
+    al->chunk_size = 0;
+    al->free_chunk_size = 0;
+    free(al);
+    al = NULL;
+}
 
