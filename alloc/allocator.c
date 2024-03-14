@@ -29,9 +29,19 @@ Allocator *Allocator_create(unsigned int chunk_size) {
 
 static int Allocator_check_free_chunk(Allocator *al, unsigned int size) {
     unsigned int real_chunk_size = al->chunk_size + (al->chunk_size / 4);
+    int free_chunk = 0;
+    byte *chunk_pointer = al->data_chunk;
     for(int i = 0; i < real_chunk_size; i++) {
-
+        if (*(chunk_pointer) != DEF_BYTE_VAL) {
+            free_chunk = 0;
+        } else {
+            free_chunk++;
+        }
+        if (free_chunk == size + POINTER_SIZE_INFO) {
+            return i;
+        }
     }
+    return -1;
 }
 
 void *Allocator_get_memory(Allocator *al, unsigned int size) {
@@ -47,9 +57,15 @@ void *Allocator_get_memory(Allocator *al, unsigned int size) {
         snprintf(error_message, 256, "do not have %u bytes chunk", size);
         return NULL;
     }
+
+    unsigned int *chunk_size_info = (unsigned int *) (al->data_chunk + chunk_pointer);
+    *chunk_size_info = size;
+    chunk_pointer += POINTER_SIZE_INFO;
+
     for(int i = 0; i < size; i++) {
         *(al->data_chunk + chunk_pointer + i) = 0;
     }
     return (void *)(al->data_chunk + chunk_pointer);
 }
+
 
