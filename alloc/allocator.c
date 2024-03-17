@@ -1,6 +1,7 @@
 #include "allocator.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 char error_message[256];
 #define POINTER_SIZE_INFO 4
@@ -20,10 +21,11 @@ Allocator *Allocator_create(unsigned int chunk_size) {
     }
     allocator->chunk_size = chunk_size;
     allocator->free_chunk_size = chunk_size;
-    byte *iterator = allocator->data_chunk;
-    for(int i = 0; i < real_chunk_size; i++) {
-        *(iterator++) = DEF_BYTE_VAL;
-    }
+    // byte *iterator = allocator->data_chunk;
+    // for(int i = 0; i < real_chunk_size; i++) {
+    //     *(iterator++) = DEF_BYTE_VAL;
+    // }
+    memset(allocator->data_chunk, DEF_BYTE_VAL, real_chunk_size);
     return allocator;
 }
 
@@ -32,13 +34,13 @@ static int Allocator_check_free_chunk(Allocator *al, unsigned int size) {
     int free_chunk = 0;
     byte *chunk_pointer = al->data_chunk;
     for(int i = 0; i < real_chunk_size; i++) {
-        if (*(chunk_pointer) != (char) DEF_BYTE_VAL) {
+        if (*(chunk_pointer + i) != (char) DEF_BYTE_VAL) {
             free_chunk = 0;
         } else {
             free_chunk++;
         }
         if (free_chunk == size + POINTER_SIZE_INFO) {
-            return i;
+            return i - free_chunk + 1;
         }
     }
     return -1;
@@ -62,9 +64,10 @@ void *Allocator_get_memory(Allocator *al, unsigned int size) {
     *chunk_size_info = size;
     chunk_pointer += POINTER_SIZE_INFO;
 
-    for(int i = 0; i < size; i++) {
-        *(al->data_chunk + chunk_pointer + i) = 0;
-    }
+    // for(int i = 0; i < size; i++) {
+    //     *(al->data_chunk + chunk_pointer + i) = 0;
+    // }
+    memset(al->data_chunk + chunk_pointer, 0, size);
     al->free_chunk_size -= size;
     return (void *)(al->data_chunk + chunk_pointer);
 }
@@ -73,9 +76,10 @@ void Allocator_free_memory(Allocator *al, void *mem) {
     unsigned int *chunk_info = (unsigned int *) (mem - POINTER_SIZE_INFO);
     byte *chunk = (byte *) mem;
 
-    for(int i = 0; i < *chunk_info; i++) {
-        *(chunk++) = 0;
-    }
+    // for(int i = 0; i < *chunk_info; i++) {
+    //     *(chunk++) = 0;
+    // }
+    memset(chunk, 0, *chunk_info);
     al->free_chunk_size += *chunk_info;
     *chunk_info = 0;
 }

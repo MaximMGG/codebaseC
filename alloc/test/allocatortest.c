@@ -1,5 +1,6 @@
 #include <assert.h>
 #include "../allocator.h"
+#include <string.h>
 
 void Allocator_create_test() {
     Allocator *al = Allocator_create(200);
@@ -33,12 +34,39 @@ void Allocator_get_memory_fail_test() {
     Allocator_destroy(al);
 }
 
+void Allocator_get_memory_struct_test() {
+
+    struct T {
+        int b;
+        double a;
+        char *msg;
+    }T;
+    Allocator *al = Allocator_create(200);
+
+    struct T *t = Allocator_get_memory(al, sizeof(struct T));
+
+    t->a = 2.1;
+    t->b = 2;
+    t->msg = "Hello";
+
+    assert_true(t->b == 2, "t->b != 2");
+    assert_true(strcmp(t->msg, "Hello") == 0, "msg not Hello");
+
+    Allocator_free_memory(al, t);
+
+    assert_true(t->a == 0, "Memory not free");
+
+    Allocator_destroy(al);
+}
+
+
 
 int main() {
     assert_begin(ASSERT_DEFAULT);
     assert_coll(Allocator_create_test);
     assert_coll(Allocator_get_memory_test);
     assert_coll(Allocator_get_memory_fail_test);
+    assert_coll(Allocator_get_memory_struct_test);
 
     assert_end();
 

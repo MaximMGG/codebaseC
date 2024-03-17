@@ -1,9 +1,9 @@
-BINARY = alloc 
+BINARY = test
 CC = gcc
 FLAGS = 
-DEBUG = 
-LIBS = 
-SRC = ./alloctest.c ./allocator.c
+DEBUG = -g
+LIBS = -lassert -l_util
+SRC = ./m_list_test.c ../m_list.c
 OBJ = $(patsubst %.c, %.o, $(SRC))
 
 all: $(BINARY)
