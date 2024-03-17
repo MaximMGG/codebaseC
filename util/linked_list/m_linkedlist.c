@@ -169,6 +169,9 @@ void LList_iterator_next(Literator *p) {
     if (p->llist_data->next != NULL) {
         p->llist_data = p->llist_data->next;
         p->data = p->llist_data->data;
+    } else {
+        p->llist_data = NULL;
+        p->data = NULL;
     }
 }
 
