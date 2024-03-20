@@ -16,7 +16,17 @@ int main() {
         printf("%d\n", *it);
     }
 
-    ARRAY_FREE(int, arr);
+    ARRAY_CHANGE_SIZE(int, 10, arr);
+
+    FOREACH(int, arr) {
+        *it = i + 4;
+    }
+
+    FOREACH(int, arr) {
+        printf("%d\n", *it);
+    }
+
+    ARRAY_FREE(arr);
 
     return 0;
 }
