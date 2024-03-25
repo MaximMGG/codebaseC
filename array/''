@@ -84,12 +84,8 @@ typedef struct {
 } dvoid_arr;
 
 void _free_arr(void_arr *arr);
-void *arr_append(void_arr *arr, void *val);
 
-#define CREATE_ARR(type, a_size) type ## _arr *arr = (type ## _arr *) malloc(sizeof(type **_arr));  \
-                                            arr->data = (type *) malloc(sizeof(type) * a_size); \
-                                            arr->size = a_size;
-
+#define CREATE_ARR(type, a_size) type ## _arr *arr = (type ## _arr *) malloc(sizeof(type **_arr) * a_size); arr->size = a_size;
 #define FREE_ARR(arr) _free_arr((void_arr *)arr)
 
 #endif //_ARRAY_H_
