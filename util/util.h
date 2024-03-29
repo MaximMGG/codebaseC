@@ -34,4 +34,6 @@ typedef char boolean;
 
 typedef char byte;
 
+void *q_malloc(unsigned int size, char *msg);
+
 #endif //_UTIL_H_
