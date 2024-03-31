@@ -3,13 +3,12 @@
 #include <string.h>
 
 void str_append_test() {
-    str a = newstr_l("Hello");
-    assert_not_null(a.str, "String is null");
-    assert_true(strcmp(a.str, "Hello") == 0, "Str no Hello");
-    assert_true(a.len == 5, "Len not 5");
-    str_free_l(&a);
-    assert_null(a.str, "After free str not NULL");
-    assert_true(a.len == 0, "Len not 0");
+
+    str *a = newstr("Hello");
+    assert_not_null(a, "str is NULL");
+    a = str_append(a, " world!");
+    assert_true(strcmp("Hello world!", a->str) == 0, "Strings not the same");
+
 }
 
 

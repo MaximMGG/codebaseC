@@ -3,6 +3,7 @@
 // #include <string.h>
 // #include <stdlib.h>
 #include <util/m_list.h>
+#include <util/util.h>
 
 typedef struct{
     char *str;
@@ -57,6 +58,7 @@ str *str_append(str *d, char *value);
 void str_free(str *__restrict s);
 //free memory of s->str s should be local;
 void str_free_l(str *__restrict s);
-
+//compare two strings, return true is same or false;
+boolean str_compare(str *a, str *b);
 
 #endif //_M_STRING_

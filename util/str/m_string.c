@@ -233,8 +233,8 @@ str *str_append(str *d, char *value) {
     unsigned int *len_info = (unsigned int *) (d->str - SIZE_LEN_INFO);
     char *temp = d->str - SIZE_LEN_INFO;
     if (*len_info == d->len || *len_info <= d->len + vlen) {
-        temp = (char *) realloc(temp, sizeof(char) * (d->len + (vlen * 2) + 1));
-        *len_info = d->len + vlen * 2 + 1;
+        temp = (char *) realloc(temp, sizeof(char) * (d->len * 2 + vlen + 1));
+        *len_info = d->len * 2 + vlen + 1;
         d->str = (temp + SIZE_LEN_INFO);
     } else {
     }
@@ -251,4 +251,8 @@ void str_free_l(str *__restrict s) {
         s->str = NULL;
     }
     s->len = 0;
+}
+
+boolean str_compare(str *a, str *b) {
+    return strcmp(a->str, b->str) == 0;
 }
