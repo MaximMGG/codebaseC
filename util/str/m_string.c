@@ -82,7 +82,28 @@ int str_find_first(STR d, const char *p) {
     return -1;
 }
 
-STR str_replace_first(STR d, const char *pattern, int *index) {
+int str_find_last(STR d, const char *p) {
+    u32 p_len = strlen(p);
+    char find = 0;
+
+    for(int i = STRLEN(d); i > 0; i--) {
+        if (d[i] == p[p_len - 1]) {
+            find = 1;
+            for(int j = p_len - 1; j > 0; j--, i--) {
+                if (d[i] != p[j]) {
+                    find = 0;
+                    break;
+                }
+            }
+            if (find == 1) {
+                return i + 1;
+            }
+        }
+    }
+    return -1;
+}
+
+STR str_remove_first(STR d, const char *pattern, int *index) {
     int p_len = strlen(pattern);
     *index = str_find_first(d, pattern);
 
@@ -99,7 +120,22 @@ STR str_replace_first(STR d, const char *pattern, int *index) {
     return d;
 }
 
-STR str_replace_last(STR d, const char *pattern);
+STR str_remove_last(STR d, const char *pattern, int *index) {
+    u32 p_len = strlen(pattern);
+    *index = str_find_last(d, pattern);
+
+    if (*index == -1) {
+        return NULL;
+    }
+
+    char *temp = (char *) malloc(sizeof(char) * (STRLEN(d) + p_len + 1));
+    strncpy(temp, d, *index);
+    strcpy((temp + *index), (d + *index + p_len));
+
+    STR t = newstr(temp);
+    free(temp);
+    return t;
+}
 
 STR str_insert(STR d, STR s, unsigned int index) {
     u32 d_len = STRLEN(d);
@@ -136,7 +172,7 @@ STR str_format(STR d, STR fmt, ...) {
                     temp[0] = (char)va_arg(li, int);
                     temp[1] = '\0';
                     STR ts = newstr(temp);
-                    d = str_replace_first(d, "%c", &i);
+                    d = str_remove_first(d, "%c", &i);
                     d = str_insert(d, ts, i);
                     i += STRLEN(ts);
                     str_free(ts);
@@ -144,7 +180,7 @@ STR str_format(STR d, STR fmt, ...) {
                 case 's': {
                     char *temp = va_arg(li, char *);
                     STR ts = newstr(temp);
-                    d = str_replace_first(d, "%s", &i);
+                    d = str_remove_first(d, "%s", &i);
                     d = str_insert(d, ts, i);
                     i += STRLEN(ts);
                     str_free(ts);
@@ -154,7 +190,7 @@ STR str_format(STR d, STR fmt, ...) {
                     int ti = va_arg(li, int);
                     snprintf(temp, 32, "%d", ti);
                     STR ts = newstr(temp);
-                    d = str_replace_first(d, "%d", &i);
+                    d = str_remove_first(d, "%d", &i);
                     d = str_insert(d, ts, i);
                     i += STRLEN(ts);
                     str_free(ts);
@@ -164,7 +200,7 @@ STR str_format(STR d, STR fmt, ...) {
                     float tf = (float)va_arg(li, double);
                     snprintf(temp, 32, "%f", tf);
                     STR ts = newstr(temp);
-                    d = str_replace_first(d, "%f", &i);
+                    d = str_remove_first(d, "%f", &i);
                     d = str_insert(d, ts, i);
                     i += STRLEN(ts);
                     str_free(ts);
@@ -174,7 +210,7 @@ STR str_format(STR d, STR fmt, ...) {
                     u32 tu = (u32) va_arg(li, u32);
                     snprintf(temp, 32, "%u", tu);
                     STR ts = newstr(temp);
-                    d = str_replace_first(d, "%u", &i);
+                    d = str_remove_first(d, "%u", &i);
                     d = str_insert(d, ts, i);
                     i += STRLEN(ts);
                     str_free(ts);
@@ -185,7 +221,7 @@ STR str_format(STR d, STR fmt, ...) {
                         i64 tld = (i64) va_arg(li, i64);
                         snprintf(temp, 32, "%ld", tld);
                         STR ts = newstr(temp);
-                        d = str_replace_first(d, "%ld", &i);
+                        d = str_remove_first(d, "%ld", &i);
                         d = str_insert(d, ts, i);
                         i += STRLEN(ts);
                         str_free(ts);
@@ -194,7 +230,7 @@ STR str_format(STR d, STR fmt, ...) {
                         double td = (double) va_arg(li, double);
                         snprintf(temp, 32, "%lf", td);
                         STR ts = newstr(temp);
-                        d = str_replace_first(d, "%lf", &i);
+                        d = str_remove_first(d, "%lf", &i);
                         d = str_insert(d, ts, i);
                         i += STRLEN(ts);
                         str_free(ts);
@@ -215,3 +251,6 @@ void str_free(STR d) {
             free(source);
     }
 }
+
+
+

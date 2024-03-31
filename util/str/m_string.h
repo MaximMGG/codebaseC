@@ -20,10 +20,14 @@ STR str_concat(STR d, STR s);
 //return -1 if did't find any p in d
 int str_find_first(STR d, const char *p);
 
+//return index where was find p (pattern) last times,
+//return -1 if did't find any p in d
+int str_find_last(STR d, const char *p);
+
 //replace first matched pattern in STR d
-STR str_replace_first(STR d, const char *pattern, int *index);
+STR str_remove_first(STR d, const char *pattern, int *index);
 //replace last matched pattern in STR d
-STR str_replace_last(STR d, const char *pattern);
+STR str_remove_last(STR d, const char *pattern, int *index);
 //insert source STR into dest STR
 STR str_insert(STR d, STR s, unsigned int index);
 /*formatting string with fmt format
