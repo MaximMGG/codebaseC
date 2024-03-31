@@ -253,4 +253,70 @@ void str_free(STR d) {
 }
 
 
+STR str_copy(STR d) {
+    return newstr(d);
+}
 
+STR str_remove_all(STR d, char symbol) {
+    char temp[STRLEN(d)] = {};
+
+    for(int i = 0, j = 0; i < STRLEN(d); i++) {
+        if (d[i] != symbol) {
+            temp[j++] = d[i];
+        } 
+    }
+    str_free(d);
+    return newstr(d);
+}
+
+boolean str_starts_with(STR d, char *pattern) {
+    u32 p_len = strlen(pattern);
+
+    for(int i = 0; i < p_len; i++) {
+        if (d[i] != pattern[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+boolean str_end_with(STR d, char *pattern) {
+    u32 p_len = strlen(pattern);
+    u32 d_len = STRLEN(d);
+
+    for(int i = p_len - 1, j = d_len - 1; i > 0; i--) {
+        if (d[j] != pattern[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+STR str_append(STR d, char *value, unsigned int value_len) {
+    u32 v_len = 0;
+    if (value_len == 0) {
+        v_len = strlen(value);
+    } else {
+        v_len = value_len;
+    }
+    byte *s = (d - ALLOC_LEN);
+    u32 d_len = STRLEN(d);
+
+    u32 *alloc_len = (u32 *)(d - ALLOC_LEN);
+    if (*alloc_len == d_len || *alloc_len <= v_len + d_len) {
+        s = (byte *) realloc(s, sizeof(char) * (d_len * 2 + v_len + ALLOC_LEN + 1));
+        alloc_len = (u32 *) s;
+        *alloc_len = d_len * 2 + v_len;
+        u32 *temp_len = (u32 *)(s + LEN); 
+        *temp_len = d_len;
+    } else {
+    }
+
+    strcpy((d + d_len), value);
+
+    return d;
+}
+
+boolean str_compare(STR a, STR b) {
+    return (strcmp(a, b) == 0);
+}
