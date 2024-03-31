@@ -3,7 +3,8 @@
 int main() {
 
     STR a = newstr("Hello");
-    STR b = newstr(" World!");
+    a = newstr_val(a, "Bobby");
+    STR b = newstr(" is a human");
 
     a = str_concat(a, b);
 
@@ -12,17 +13,18 @@ int main() {
     free(a - 8);
     free(b - 8);
 
-    a = newstr("My name is %s and i am a human");
+    a = newstr("Hello, my name is %s and i am a Human");
 
     int i = str_find_first(a, "is");
 
-    printf("%d\n", i);
-
-    i = str_replace_first(a, "%s");
+    a = str_replace_first(a, "%s", &i);
+    b = newstr("Bobby");
+    a = str_insert(a, b, i);
 
     printf("%s\n", a);
 
     free(a - 8);
+    free(b - 8);
 
     return 0;
 }

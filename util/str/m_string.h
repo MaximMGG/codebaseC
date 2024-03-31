@@ -21,9 +21,9 @@ STR str_concat(STR d, STR s);
 int str_find_first(STR d, const char *p);
 
 //replace first matched pattern in STR d
-int str_replace_first(STR d, const char *pattern);
+STR str_replace_first(STR d, const char *pattern, int *index);
 //replace last matched pattern in STR d
-int str_replace_last(STR d, const char *pattern);
+STR str_replace_last(STR d, const char *pattern);
 //insert source STR into dest STR
 STR str_insert(STR d, STR s, unsigned int index);
 /*formatting string with fmt format

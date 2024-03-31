@@ -8,7 +8,7 @@
 
 STR newstr(const char *s) {
     unsigned int s_len = strlen(s);
-    STR new =  (STR) malloc(sizeof(char) * s_len + ALLOC_LEN + 1);
+    STR new = (STR) malloc(sizeof(char) * (s_len + ALLOC_LEN + 1));
 
     if (new == NULL) {
         return NULL;
@@ -28,7 +28,13 @@ STR newstr_val(STR d, const char *value) {
     unsigned int s_len = strlen(value);
     STR new = (STR)(d - ALLOC_LEN);
 
-    new = (STR) realloc(new, sizeof(char) * s_len + ALLOC_LEN + 1);
+    if (s_len < STRLEN(d)) {
+        free(new);
+        new = malloc(sizeof(char) * (s_len + ALLOC_LEN + 1));
+    } else {
+        new = (STR) realloc(new, sizeof(char) * (s_len + ALLOC_LEN + 1));
+    }
+
     if (new == NULL) {
         return NULL;
     }
@@ -44,11 +50,14 @@ STR newstr_val(STR d, const char *value) {
 
 STR str_concat(STR d, STR s) {
     STR new_d = (d - ALLOC_LEN);
-    new_d = (STR) realloc(new_d, sizeof(char) * (STRLEN(d) + STRLEN(s)) + ALLOC_LEN + 1);
-    strcpy(&d[STRLEN(d)], s);
+    u32 d_len = STRLEN(d);
+    u32 s_len = STRLEN(s);
+
+    new_d = (STR) realloc(new_d, sizeof(char) * (d_len + s_len) + ALLOC_LEN + 1);
+    strcpy((new_d + ALLOC_LEN + d_len), s);
     unsigned int *new_alloc_len = (unsigned int *) new_d;
     unsigned int *new_len = (unsigned int *) (new_d + LEN);
-    *new_alloc_len = *new_len = STRLEN(d) + STRLEN(s);
+    *new_alloc_len = *new_len = d_len + s_len;
 
     return (STR) new_d + ALLOC_LEN;
 }
@@ -73,31 +82,33 @@ int str_find_first(STR d, const char *p) {
     return -1;
 }
 
-int str_replace_first(STR d, const char *pattern) {
+STR str_replace_first(STR d, const char *pattern, int *index) {
     int p_len = strlen(pattern);
-    int index = str_find_first(d, pattern);
+    *index = str_find_first(d, pattern);
 
-    if (index == -1) {
-        return -1;
+    if (*index == -1) {
+        return NULL;
     }
-    char *temp = (char *) malloc(sizeof(char) * STRLEN(d) - p_len);
-    strncpy(temp, d, index);
-    strcpy((temp + index), (d + index + p_len));
+    char *temp = (char *) malloc(sizeof(char) * STRLEN(d) + p_len + 1);
+    strncpy(temp, d, *index);
+    strcpy((temp + *index), (d + *index + p_len));
 
-    newstr_val(d, temp);
+    d = newstr_val(d, temp);
     free(temp);
 
-    return index;
+    return d;
 }
 
-int str_replace_last(STR d, const char *pattern);
+STR str_replace_last(STR d, const char *pattern);
 
 STR str_insert(STR d, STR s, unsigned int index) {
-    char *temp = malloc(sizeof(char) * STRLEN(d) + STRLEN(s) + 1);
+    u32 d_len = STRLEN(d);
+    u32 s_len = STRLEN(s);
+    char *temp = malloc(sizeof(char) * (d_len + s_len + 1));
     strncpy(temp, d, index);
     strcpy((temp + index), s);
-    strcpy((temp + index + STRLEN(s)), (d + index));
-    newstr_val(d, temp);
+    strcpy((temp + index + s_len), (d + index));
+    d = newstr_val(d, temp);
     free(temp);
     return d;
 }
