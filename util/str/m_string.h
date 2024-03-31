@@ -5,61 +5,41 @@
 #include <util/m_list.h>
 #include <util/util.h>
 
-typedef struct{
-    char *str;
-    unsigned int len;
-}str;
+typedef char * STR;
+#define STRLEN(s) *(unsigned int *) (s - 4)
 
-typedef int STR_ERR;
-
-extern STR_ERR STR_ERROR;
-
-#define STR(a, s) {.len = (strlen(a))};                                      \
-                    s.str = (char *) malloc(sizeof(char) * strlen(a) + 1);   \
-                    strcpy(s.str, a);                                        
-
-
-// #define STR(a, s) (str *) malloc(sizeof(str));                                  \
-//                     s->len = strlen(a); s->str = (char *) malloc(s->len);       \
-//                     strcpy(s->str, a);
 
 //create new string, return pointer on str (str *) allocated memory in the heap
-str *newstr(const char *s);
-//create new string, return local str, for s->str allocated memory in the head
-str newstr_local(const char *s);
+STR newstr(const char *s);
 //do not create new string, just free d->str, and copy value to new allocated
 //d->str
-str *newstr_val(str *d, char *value);
+STR newstr_val(STR d, const char *value);
 //concatinate two string and return string d
-str *str_concat(str *d, str *s);
+STR str_concat(STR d, STR s);
 /*formatting string with fmt format
 * for now only working with patterns like %d, %c, %f, %lf, %ld, %s, %x
 */
-str *str_format(str *d, str *fmt, ...);
+STR str_format(STR d, STR fmt, ...);
 //return List split by symbol
-List *str_split(str *d, char symbol);
-//return STR_ERR messag
-str *str_err();
+List *str_split(STR d, char symbol);
 //return copy of str
-str *str_copy(str *d);
+STR str_copy(STR d);
 //remove all symbols from string
-str *str_remove_all(str *d, char symbol);
+STR str_remove_all(STR d, char symbol);
 //return 1 if string d starts with "pattern"
 //f.e. str *d = "hello", if pattern "he" -> return 1, 
 //if pattern "qu" -> return 0
-char str_starts_with(str *d, char *pattern);
+boolean str_starts_with(STR d, char *pattern);
 // return 1 if string d ends with "pattern"
 // f.e. str *d = "Hello", if pattern "llo" return 1
 // if "le" return 0;
-char str_end_with(str *d, char *pattern);
+boolean str_end_with(STR d, char *pattern);
 //append to str new value, if value_len == 0, append all value, if not, then
 //append value_len bytes of value
-str *str_append(str *d, char *value, unsigned int value_len);
+STR str_append(STR d, char *value, unsigned int value_len);
 //free memory
-void str_free(str *__restrict s);
-//free memory of s->str s should be local;
-void str_free_l(str *__restrict s);
+void str_free(STR __restrict s);
 //compare two strings, return true is same or false;
-boolean str_compare(str *a, str *b);
+boolean str_compare(STR a, STR b);
 
 #endif //_M_STRING_
