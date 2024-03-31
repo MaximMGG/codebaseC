@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 STR_ERR STR_ERROR;
+#define SIZE_LEN_INFO 4
 #define STR_ERR(a)  fprintf(stderr, "File - %s, func - %s, line - %d, msg - %s", __FILE__, __FUNCTION__, __LINE__, a)
 #define foreach(s)  char c = *(s->str);                                      \
                     for (int i = 0; ; c = *(s->str + i), i++)                \
@@ -16,19 +17,23 @@ enum errors{
 };
 
 
-
-str *newstr(char *s) {
+str *newstr(const char *s) {
     str *new = (str *) malloc(sizeof(str));
     new->len = strlen(s);
-    new->str = (char *) malloc(sizeof(char) * new->len + 1);
+    char *temp = (char *) malloc(sizeof(char) * new->len + 1 + SIZE_LEN_INFO);
+    unsigned int *len_info = (unsigned int *) temp;
+    *len_info = new->len;
+    new->str = (temp + 4);
     strcpy(new->str, s);
-
     return new;
 }
 
-str newstr_l(char *s) {
+str newstr_local(const char *s) {
     str new = {.len = strlen(s)};
-    new.str = (char *) malloc(sizeof(char) * new.len + 1);
+    char *temp = (char *) malloc(sizeof(char) * new.len + 1);
+    unsigned int *len_info = (unsigned int *) temp;
+    *len_info = new.len;
+    new.str = (temp + 4);
     strcpy(new.str, s);
     return new;
 }
@@ -45,6 +50,8 @@ str *newstr_val(str *d, char *value) {
     d->len = strlen(value);
     d->str = (char *) malloc(sizeof(char) * d->len + 1);
     strcpy(d->str, value);
+    unsigned int *len_info = (unsigned int *) (d->str - 4);
+    *len_info = d->len;
 
     return d;
 }
@@ -71,7 +78,7 @@ str *str_concat(str *d, str *s) {
 
 List *str_split(str *d, char symbol) {
     List *list = list_create(0, l_string);
-    char buf[200];
+    char buf[d->len];
     int j = 0;
 
     foreach(d) {
@@ -90,8 +97,6 @@ List *str_split(str *d, char symbol) {
     }
     return list;
 }
-//return STR_ERR messag
-str *str_err();
 //return copy of str
 str *str_copy(str *d) {
    return newstr(d->str);
@@ -128,8 +133,9 @@ char str_starts_with(str *d, char *pattern) {
 //free memory
 void str_free(str *s) {
     if (s != NULL) {
+        char *temp = (s->str - SIZE_LEN_INFO);
         if (s->str != NULL) {
-            free(s->str);
+            free(temp);
             s->str = NULL;
             s->len = 0;
         }
@@ -224,15 +230,24 @@ char str_end_with(str *d, char *pattern) {
 
 str *str_append(str *d, char *value) {
     int vlen = strlen(value);
-    d->str = (char *) realloc(d->str, sizeof(char) * (d->len + vlen + 1));
+    unsigned int *len_info = (unsigned int *) (d->str - SIZE_LEN_INFO);
+    char *temp = d->str - SIZE_LEN_INFO;
+    if (*len_info == d->len || *len_info <= d->len + vlen) {
+        temp = (char *) realloc(temp, sizeof(char) * (d->len + (vlen * 2) + 1));
+        *len_info = d->len + vlen * 2 + 1;
+        d->str = (temp + SIZE_LEN_INFO);
+    } else {
+    }
     strcpy(&d->str[d->len], value);
     d->len += vlen;
     return d;
 }
 
 void str_free_l(str *__restrict s) {
-    if (s->str != NULL) {
-        free(s->str);
+    char *temp = (s->str - SIZE_LEN_INFO);
+    if (temp != NULL && s->str != NULL) {
+        free(temp);
+        temp = NULL;
         s->str = NULL;
     }
     s->len = 0;

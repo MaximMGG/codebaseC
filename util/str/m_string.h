@@ -23,9 +23,9 @@ extern STR_ERR STR_ERROR;
 //                     strcpy(s->str, a);
 
 //create new string, return pointer on str (str *) allocated memory in the heap
-str *newstr(char *s);
+str *newstr(const char *s);
 //create new string, return local str, for s->str allocated memory in the head
-str newstr_l(char *s);
+str newstr_local(const char *s);
 //do not create new string, just free d->str, and copy value to new allocated
 //d->str
 str *newstr_val(str *d, char *value);
