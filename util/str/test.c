@@ -17,7 +17,7 @@ int main() {
 
     int i = str_find_first(a, "is");
 
-    a = str_replace_first(a, "%s", &i);
+    a = str_remove_first(a, "%s", &i);
     b = newstr("Bobby");
     a = str_insert(a, b, i);
 
@@ -33,5 +33,22 @@ int main() {
 
     str_free(a);
     str_free(b);
+
+    a = newstr("Hello");
+    a = str_append(a, " Bobby", 0);
+
+    printf("%s\n", a);
+
+    str_free(a);
+    
+    a = newstr("Lets count -> ");
+    char temp[10] = "abc ";
+    for(int i = 0; i < 10; i++) {
+        temp[2] += 1;
+        a = str_append(a, temp, 0);
+        printf("%s\n", a);
+    }
+
+    str_free(a);
     return 0;
 }

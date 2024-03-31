@@ -293,27 +293,29 @@ boolean str_end_with(STR d, char *pattern) {
 }
 
 STR str_append(STR d, char *value, unsigned int value_len) {
+    byte *a_str = (d - ALLOC_LEN);
+    u32 *alloc_len_info = (u32 *) a_str;
+    u32 *str_len = (u32 *) (a_str + LEN);
+
     u32 v_len = 0;
     if (value_len == 0) {
         v_len = strlen(value);
     } else {
         v_len = value_len;
     }
-    byte *s = (d - ALLOC_LEN);
-    u32 d_len = STRLEN(d);
 
-    u32 *alloc_len = (u32 *)(d - ALLOC_LEN);
-    if (*alloc_len == d_len || *alloc_len <= v_len + d_len) {
-        s = (byte *) realloc(s, sizeof(char) * (d_len * 2 + v_len + ALLOC_LEN + 1));
-        alloc_len = (u32 *) s;
-        *alloc_len = d_len * 2 + v_len;
-        u32 *temp_len = (u32 *)(s + LEN); 
-        *temp_len = d_len;
-    } else {
+    if (*alloc_len_info == *str_len || *alloc_len_info <= *str_len + v_len) {
+        u32 temp_str_len = *str_len;
+        a_str = (byte *) realloc(a_str, sizeof(char) * (*str_len * 2 + v_len + ALLOC_LEN + 1));
+        alloc_len_info = (u32 *) a_str;
+        str_len = (u32 *) (a_str + LEN);
+        *alloc_len_info = (temp_str_len * 2 + v_len);
+        *str_len = temp_str_len;
+        d = (a_str + ALLOC_LEN);
     }
 
-    strcpy((d + d_len), value);
-
+    strcpy((d + *str_len), value);
+    *str_len += v_len;
     return d;
 }
 
