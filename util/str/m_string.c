@@ -129,10 +129,12 @@ STR str_format(STR d, STR fmt, ...) {
     d = newstr(fmt);
 
     for(int i = 0; i < STRLEN(d); i++) {
-        if (fmt[i] == '%') {
-            switch (fmt[i + 1]) {
+        if (d[i] == '%') {
+            switch (d[i + 1]) {
                 case 'c': {
-                    char *temp = va_arg(li, char *);
+                    char temp[2];
+                    temp[0] = (char)va_arg(li, int);
+                    temp[1] = '\0';
                     STR ts = newstr(temp);
                     d = str_replace_first(d, "%c", &i);
                     d = str_insert(d, ts, i);
@@ -202,7 +204,8 @@ STR str_format(STR d, STR fmt, ...) {
         }
 
     }
-    return NULL;
+    va_end(li);
+    return d;
 }
 
 void str_free(STR d) {
