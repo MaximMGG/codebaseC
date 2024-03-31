@@ -126,17 +126,89 @@ STR str_format(STR d, STR fmt, ...) {
     va_list li;
     va_start(li, fmt);
 
-    for(int i = 0; i < STRLEN(fmt); i++) {
+    d = newstr(fmt);
+
+    for(int i = 0; i < STRLEN(d); i++) {
         if (fmt[i] == '%') {
             switch (fmt[i + 1]) {
                 case 'c': {
-                    STR temp = va_arg(li, char *);
-
-
-                }
+                    char *temp = va_arg(li, char *);
+                    STR ts = newstr(temp);
+                    d = str_replace_first(d, "%c", &i);
+                    d = str_insert(d, ts, i);
+                    i += STRLEN(ts);
+                    str_free(ts);
+                } break;
+                case 's': {
+                    char *temp = va_arg(li, char *);
+                    STR ts = newstr(temp);
+                    d = str_replace_first(d, "%s", &i);
+                    d = str_insert(d, ts, i);
+                    i += STRLEN(ts);
+                    str_free(ts);
+                } break;
+                case 'd': {
+                    char temp[32] = {0}; 
+                    int ti = va_arg(li, int);
+                    snprintf(temp, 32, "%d", ti);
+                    STR ts = newstr(temp);
+                    d = str_replace_first(d, "%d", &i);
+                    d = str_insert(d, ts, i);
+                    i += STRLEN(ts);
+                    str_free(ts);
+                } break;
+                case 'f': {
+                    char temp[32] = {0}; 
+                    float tf = (float)va_arg(li, double);
+                    snprintf(temp, 32, "%f", tf);
+                    STR ts = newstr(temp);
+                    d = str_replace_first(d, "%f", &i);
+                    d = str_insert(d, ts, i);
+                    i += STRLEN(ts);
+                    str_free(ts);
+                } break;
+                case 'u': {
+                    char temp[32] = {0}; 
+                    u32 tu = (u32) va_arg(li, u32);
+                    snprintf(temp, 32, "%u", tu);
+                    STR ts = newstr(temp);
+                    d = str_replace_first(d, "%u", &i);
+                    d = str_insert(d, ts, i);
+                    i += STRLEN(ts);
+                    str_free(ts);
+                } break;
+                case 'l': {
+                    if (d[i + 2] == 'd') {
+                        char temp[32] = {0}; 
+                        i64 tld = (i64) va_arg(li, i64);
+                        snprintf(temp, 32, "%ld", tld);
+                        STR ts = newstr(temp);
+                        d = str_replace_first(d, "%ld", &i);
+                        d = str_insert(d, ts, i);
+                        i += STRLEN(ts);
+                        str_free(ts);
+                    } else if (d[i + 2] == 'f') {
+                        char temp[32] = {0}; 
+                        double td = (double) va_arg(li, double);
+                        snprintf(temp, 32, "%lf", td);
+                        STR ts = newstr(temp);
+                        d = str_replace_first(d, "%lf", &i);
+                        d = str_insert(d, ts, i);
+                        i += STRLEN(ts);
+                        str_free(ts);
+                    }
+                } break;
             }
         }
 
     }
     return NULL;
+}
+
+void str_free(STR d) {
+    if (d != NULL) {
+        void *source = (d - ALLOC_LEN);
+        if (source != NULL)
+            free(source);
+    }
 }
