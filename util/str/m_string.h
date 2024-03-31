@@ -52,8 +52,9 @@ char str_starts_with(str *d, char *pattern);
 // f.e. str *d = "Hello", if pattern "llo" return 1
 // if "le" return 0;
 char str_end_with(str *d, char *pattern);
-//append to str new value
-str *str_append(str *d, char *value);
+//append to str new value, if value_len == 0, append all value, if not, then
+//append value_len bytes of value
+str *str_append(str *d, char *value, unsigned int value_len);
 //free memory
 void str_free(str *__restrict s);
 //free memory of s->str s should be local;

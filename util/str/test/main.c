@@ -9,6 +9,13 @@ void str_append_test() {
     a = str_append(a, " world!");
     assert_true(strcmp("Hello world!", a->str) == 0, "Strings not the same");
 
+    char *name = " Billy\0";
+
+    for(int i = 0; name[i] != '\0'; i++) {
+        a = str_append(a, &name[i]);
+    }
+
+    assert_true(strcmp("Hello world! Billy", a->str) == 0, "Billy not added");
 }
 
 

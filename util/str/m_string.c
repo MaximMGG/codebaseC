@@ -228,8 +228,13 @@ char str_end_with(str *d, char *pattern) {
     return 1;
 }
 
-str *str_append(str *d, char *value) {
-    int vlen = strlen(value);
+str *str_append(str *d, char *value, unsigned int value_len) {
+    int vlen;
+    if (value_len == 0) {
+        vlen = strlen(value);
+    } else {
+        vlen = value_len;
+    }
     unsigned int *len_info = (unsigned int *) (d->str - SIZE_LEN_INFO);
     char *temp = d->str - SIZE_LEN_INFO;
     if (*len_info == d->len || *len_info <= d->len + vlen) {
