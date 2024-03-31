@@ -1,16 +1,16 @@
-#include <util/m_string.h>
-#include <stdio.h>
-
-extern str *str_concat_a(str *a, str *b);
-extern str *test_str(str *a);
+#include "m_string.h"
 
 int main() {
 
-    str *a = newstr("hello");
+    STR a = newstr("Hello");
+    STR b = newstr(" World!");
 
-    str *b = test_str(a);
-    printf("%s\n %d\n", b->str, b->len);
+    a = str_concat(a, b);
 
+    printf("%s\n", a);
+
+    free(a - 8);
+    free(b - 8);
 
     return 0;
 }

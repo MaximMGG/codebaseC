@@ -1,31 +1,27 @@
-#include <util/m_string.h>
+#include "../m_string.h"
 #include <assert.h>
 #include <string.h>
 
-void str_append_test() {
+void new_str_test() {
+    STR a = newstr("Hello");
+    STR b = newstr(" World!");
 
-    str *a = newstr("Hello");
-    assert_not_null(a, "str is NULL");
-    a = str_append(a, " world!", 0);
-    assert_true(strcmp("Hello world!", a->str) == 0, "Strings not the same");
+    assert_not_null(a, "a is NULL");
+    assert_not_null(b, "a is NULL");
 
-    char *name = " Billy\0";
+    a = str_concat(a, b);
 
-    for(int i = 0; name[i] != '\0'; i++) {
-        a = str_append(a, &name[i], 1);
-    }
+    assert_true(strcmp(a, "Hello World!") == 0, "a is not Hello World!");
 
-    assert_true(strcmp("Hello world! Billy", a->str) == 0, "Billy not added");
-
-    str_free(a);
+    free(a - 8);
+    free(b - 8);
 }
-
 
 
 int main() {
 
     assert_begin(ASSERT_DEFAULT);
-    assert_coll(str_append_test);
+    assert_coll(new_str_test);
     assert_end();
 
     return 0;

@@ -2,7 +2,6 @@
 #define _M_STRING_
 // #include <string.h>
 // #include <stdlib.h>
-#include <util/m_list.h>
 #include <util/util.h>
 
 typedef char * STR;
@@ -21,7 +20,7 @@ STR str_concat(STR d, STR s);
 */
 STR str_format(STR d, STR fmt, ...);
 //return List split by symbol
-List *str_split(STR d, char symbol);
+// List *str_split(STR d, char symbol);
 //return copy of str
 STR str_copy(STR d);
 //remove all symbols from string
