@@ -25,7 +25,7 @@ int str_replace_first(STR d, const char *pattern);
 //replace last matched pattern in STR d
 int str_replace_last(STR d, const char *pattern);
 //insert source STR into dest STR
-STR str_insert(STR d, STR s);
+STR str_insert(STR d, STR s, unsigned int index);
 /*formatting string with fmt format
 * for now only working with patterns like %d, %c, %f, %lf, %ld, %s, %x
 */

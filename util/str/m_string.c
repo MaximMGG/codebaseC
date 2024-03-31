@@ -81,8 +81,8 @@ int str_replace_first(STR d, const char *pattern) {
         return -1;
     }
     char *temp = (char *) malloc(sizeof(char) * STRLEN(d) - p_len);
-    strncpy(temp, d, index - 1);
-    strcpy(temp + index, d + index + p_len);
+    strncpy(temp, d, index);
+    strcpy((temp + index), (d + index + p_len));
 
     newstr_val(d, temp);
     free(temp);
@@ -90,11 +90,17 @@ int str_replace_first(STR d, const char *pattern) {
     return index;
 }
 
-
-
-
 int str_replace_last(STR d, const char *pattern);
-STR str_insert(STR d, STR s);
+
+STR str_insert(STR d, STR s, unsigned int index) {
+    char *temp = malloc(sizeof(char) * STRLEN(d) + STRLEN(s) + 1);
+    strncpy(temp, d, index);
+    strcpy((temp + index), s);
+    strcpy((temp + index + STRLEN(s)), (d + index));
+    newstr_val(d, temp);
+    free(temp);
+    return d;
+}
 
 
 static void str_format_insert(STR d, STR s, unsigned int len) {
