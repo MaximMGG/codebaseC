@@ -15,6 +15,17 @@ STR newstr(const char *s);
 STR newstr_val(STR d, const char *value);
 //concatinate two string and return string d
 STR str_concat(STR d, STR s);
+
+//return index where was find p (pattern) first times,
+//return -1 if did't find any p in d
+int str_find_first(STR d, const char *p);
+
+//replace first matched pattern in STR d
+int str_replace_first(STR d, const char *pattern);
+//replace last matched pattern in STR d
+int str_replace_last(STR d, const char *pattern);
+//insert source STR into dest STR
+STR str_insert(STR d, STR s);
 /*formatting string with fmt format
 * for now only working with patterns like %d, %c, %f, %lf, %ld, %s, %x
 */
