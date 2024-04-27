@@ -165,8 +165,7 @@ List *list_add(List *list, void *value) {
         list->list[list->len] = (void *) malloc(sizeof(char) * strlen((char *) value));
         strcpy(list->list[list->len], (char *) value);
     } else {
-        list->list[list->len] = (void *) malloc(list->type_size);
-        memcpy(list->list[list->len], value, list->type_size);
+        list->list[list->len] = value;
     }
     list->len++;
 
@@ -269,3 +268,14 @@ void list_free_all(List *list) {
     list = NULL;
 }
 
+void list_free_all_struct(List *list, void (*free_func)(void *f)) {
+    for(int i = 0; i < list->len; i++) {
+        free_func(list->list[i]);
+    }
+    free(list->list);
+    list->list = NULL;
+    list->len = 0;
+    list->max_len = 0;
+    list->type_size = 0;
+    free(list);
+}

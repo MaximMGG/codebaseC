@@ -59,6 +59,8 @@ List *list_remove(List *list, void *value);
 void *list_get(List *list, int index);
 //free all memory in List
 void list_free_all(List *list);
+//free all memory in List for l_struct
+void list_free_all_struct(List *list, void (*free_func)(void *f));
 
 
 #endif //_M_LIST_

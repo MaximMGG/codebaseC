@@ -23,13 +23,12 @@ $(LIB): $(OBJ)
 # 	gcc -o $@ -c str/m_string.c -g
 
 %.o: %.c
-	gcc -o $@ -c $< -g
+	gcc -std=c17 -o $@ -c $< -g
 
 clean:
 	rm *.a $(OBJ)
 
 deploy:
-	sudo cp $(LIB) /usr/lib/
 	sudo mkdir -p /usr/include/util
 	sudo cp ar_list/m_list.h /usr/include/util/
 	sudo cp pr_map/pr_map.h /usr/include/util/
@@ -37,3 +36,4 @@ deploy:
 	sudo cp str/m_string.h /usr/include/util/
 	sudo cp	linked_list/m_linkedlist.h /usr/include/util/
 	sudo cp	util.h /usr/include/util
+	sudo cp $(LIB) /usr/lib/

@@ -258,7 +258,7 @@ STR str_copy(STR d) {
 }
 
 STR str_remove_all(STR d, char symbol) {
-    char temp[STRLEN(d)] = {};
+    char temp[STRLEN(d)];
 
     for(int i = 0, j = 0; i < STRLEN(d); i++) {
         if (d[i] != symbol) {
